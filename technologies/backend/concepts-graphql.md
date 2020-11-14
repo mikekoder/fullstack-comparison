@@ -1,3 +1,6 @@
 
-# Tasks
-## Task scheduling
+# GraphQL
+## Queries
+## Mutations
+## Resolvers
+## Subscriptions

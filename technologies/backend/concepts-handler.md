@@ -10,6 +10,25 @@ H8 - Cache dependencies: Cached values can be cleared by some convention (e.g. r
 
 ## Dependency injection
 
+``` csharp
+// ASP.NET Core
+services.AddTransient<IExampleService, ExampleService>();
+services.AddSingleton<AnotherService>();
+
+public class ExampleController : Controller 
+{
+    private readonly IExampleService service;
+    public ExampleController(ExampleService service)
+    {
+        this.service = service;
+    }
+
+    public ExampleModel GetData([FromService]AnotherService service)
+    {
+        // ...
+    }
+}
+```
 
 ## Model binding
 Model binding is the process of reading values from HTTP request and converting them to given type.

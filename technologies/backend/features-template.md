@@ -10,6 +10,45 @@
 
 # Concepts
 
+## Routing
+
+### Basic
+- method
+- pattern
+- parameters
+- constraints
+- fallback
+
+```
+GET     /products/     -> get list of products
+GET     /products/{id} -> get single product
+POST    /products/     -> create product
+PUT     /products/{id} -> update product
+DELETE  /products/{id} -> delete product
+```
+
+### Advanced
+- conventions
+- prefix
+- subdomain
+
+- versioning
+
+## Middleware / Pipeline
+- before
+- after
+- global
+- per route
+- convention
+
+
+
+## Model binding
+- path
+- query
+- body
+- headers
+
 ## Authentication
 - Username/password
 - OAuth
@@ -21,30 +60,6 @@
 - Claims
 - Policies
 - global/per route/convention
-
-## Middleware / Pipeline
-- before
-- after
-- global
-- per route
-- convention
-
-## RESTful routing
-- method
-- pattern
-- parameters
-- constraints
-- conventions
-- prefix
-- subdomain
-- fallback
-- versioning
-
-## Model binding
-- path
-- query
-- body
-- headers
 
 ## Databases
 - Relational

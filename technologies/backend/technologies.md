@@ -34,7 +34,7 @@ Most popular web backend frameworks
 - Spring        (Java)
 - Django        (Python)
 - Flask         (Python)
-- Lavarel       (PHP)
+- Laravel       (PHP)
 - Ruby on Rails (Ruby)
 - Symfony       (PHP)
 ```
@@ -100,7 +100,7 @@ Most loved web backend frameworks
 - Spring          (Java)
 - Django          (Python)
 - Flask           (Python)
-- Lavarel         (PHP)
+- Laravel         (PHP)
 - Ruby on Rails   (Ruby)
 - Symfony         (PHP)
 - ASP.NET         (C#)
@@ -114,7 +114,7 @@ Most wanted web backend frameworks
 - Express         (JavaScript/TypeScript)
 - Spring          (Java)
 - Ruby on Rails   (Ruby)
-- Lavarel         (PHP)
+- Laravel         (PHP)
 - ASP.NET         (C#)
 - Symfony         (PHP)
 ```
@@ -201,21 +201,21 @@ Most popular language (suited for web api)
 - ---Lua---
 - Haskell
 
-Most popular web backend frameworks
+## Most popular web backend frameworks (fullstack)
+[link](https://stackshare.io/frameworks)
 ```
 - Node.js                 (JavaScript/TypeScript)
 - Django                  (Python)
 - ASP.NET                 (C#)
 - Rails                   (Ruby)
-- Lavarel                 (PHP)
+- Laravel                 (PHP)
 - .NET                    (C#)
 - Symfony                 (PHP)
 - Spring Boot             (Java,Kotlin,Scala)
 - Meteor                  (JavaScript/TypeScript)
 - Spring                  (Java)
-- CodeIgniter             (PHP?)
+- CodeIgniter             (PHP)
 - Django REST framework   (Python)
-- Next.js                 (JavaScript/TypeScript)
 - .NET Core               (C#)
 - Phoenix Framework       (Elixir)
 - Play                    (Java,Kotlin,Scala)
@@ -225,27 +225,118 @@ Most popular web backend frameworks
 - NestJS                  (JavaScript/TypeScript)
 - Spring MVC              (Java)
 - Spring Framework        (Java)
-- Tornado       
-- Dropwizard
-- Grails
-- Phalcon
-- Zend Framework
+- Tornado                 (Python)
+- Dropwizard              (Java)
+- Grails                  (Groovy)
+- Phalcon                 (PHP)
+- Laminas (Zend)          (PHP)
+```
+
+## Most popular web backend frameworks (micro)
+[link](https://stackshare.io/microframeworks)
+```
+- ExpressJS               (JavaScript/TypeScript)
+- Flask                   (Python)
+- Django REST framework   (Python)
+- Sinatra                 (Ruby)
+- Koa                     (JavaScript/TypeScript)
+- Hapi                    (JavaScript/TypeScript)
+- Lumen                   (PHP)
+- Sails.js                (JavaScript/TypeScript)
+- Slim                    (PHP)
+- LoopBack                (JavaScript/TypeScript)
+- FeathersJS              (JavaScript/TypeScript)
+- Fastify                 (JavaScript/TypeScript)
+- Grape                   (Ruby)
+- AIOHTTP                 (Python)
+- Rails::API              (Ruby)
+- Falcon                  (Python)
+- Jersey                  (Java)
+- Restify                 (JavaScript/TypeScript)
+- Nancy                   (C#)
+- Iron (not mainteined)   (Rust)
+- Silex                   (PHP)
+- Sapper                  (JavaScript/TypeScript)
+- Tastypie                (Python)
+- Ktor                    (Kotlin)
+- Bottle                  (Python)
+- Moleculer               (JavaScript/TypeScript)
 ```
 
 # Conclusion
+
+
+## Backend
+
+Popularity top 10
+- Python
+- JavaScript
+- Java
+- C#
+- PHP
+- C++
+- C
+- TypeScript
+- Go
+- Ruby
+
+
+Loved/wanted top 10
+- Python
+- TypeScript
+- Rust
+- Go
+- Kotlin
+- JavaScript
+- C#
+- Dart
+- Java
+- C++
+
+Popular frameworks
+- Express
+- ASP.NET
+- Django
+- Flask
+- Spring
+- Laravel
+- Ruby on Rails
+- Symfony
+- ASP.NET Core
+
+Loved/wanted frameworks
+- ASP.NET Core
+- Django
+- Express
+- Flask
+- Spring
+- Laravel
+- Ruby on Rails
+- ASP.NET
+- Symfony
+
+### Search
+```
+"{programming language} rest api"
+"{programming language} building rest api"
+"{programming language} crud api"
+```
+
+- JavaScript/TypeScript: Express (89%/72%)
+- Python: Flask (80%)
+- Java: Spring (71%)
+- C#: ASP.NET MVC/Web Api/Core (97%)
+- PHP: Laravel (almost no articles using any framework)
+
+### Selected technologies
+- Python + Flask
 - JavaScript/TypeScript + Express
-  - NestJS
 - C# + ASP.NET Core
-- Python + Django
 - Java + Spring
-- PHP + Lavarel
+- PHP + Laravel
 
 - Ruby + Ruby on Rails
 - PHP + Symfony
-- Python + Flask
-- PHP + CodeIgniter
-- Java + Play
-
 
 
 
@@ -283,7 +374,6 @@ Most popular web backend frameworks
   - [Falcon](https://github.com/falconry/falcon)
   - [Hug](https://github.com/hugapi/hug)
   - [Sandman2](https://github.com/jeffknupp/sandman2)
-  - [Sanic](https://github.com/huge-success/sanic)
   - [Vibora](https://vibora.io/)
   - [Bottle](http://bottlepy.org/docs/dev/)
   - [Web2Py](http://web2py.com/)
@@ -307,7 +397,7 @@ Most popular web backend frameworks
   - [RestX](http://restx.io/)
   - [Retrofit](http://square.github.io/retrofit/)
 - PHP
-  - Lavarel
+  - Laravel
   - Slim
   - Lumen
   - [CakePHP](https://cakephp.org/)

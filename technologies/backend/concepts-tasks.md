@@ -29,3 +29,15 @@ public class TimedHostedService : IHostedService, IDisposable
     }
 }
 ```
+
+``` ts
+// NestJS
+@Injectable()
+export class TasksService {
+
+  @Cron('0 */5 * * * *')
+  handleCron() {
+    // ...
+  }
+}
+```

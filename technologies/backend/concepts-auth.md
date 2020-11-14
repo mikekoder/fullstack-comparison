@@ -15,9 +15,24 @@ Logging in with 3rd party accounts (e.g. Google or Facebook) is a common scenari
 ## JWT
 
 ## Roles
-- Restrict access based on user roles etc.
+``` csharp
+// ASP.NET Core
+[Authorize(Roles = "Admin")]
+public class ProductController : ControllerBase { }
+```
 
-Features:
-- Basic: handler requires special role
-- Advanced: 
+## Policies
+
+``` csharp
+// ASP.NET Core
+services.AddAuthorization(options =>
+{
+    options.AddPolicy("OnlyExampleDotCom", policy =>
+        policy.RequireAssertion(ctx =>
+            ctx.User.Claims.First(c => c.Type == ClaimTypes.Email).Value.EndsWith("@example.com")));
+});
+
+[Authorize(Policy = "OnlyExampleDotCom")]
+public class ProductController : ControllerBase { }
+```
 

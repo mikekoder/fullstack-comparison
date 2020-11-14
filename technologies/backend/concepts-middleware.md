@@ -138,6 +138,17 @@ class ExampleMiddleware
 }
 ```
 
+``` python
+# FastAPI
+@app.middleware("http")
+async def example_middleware(request: Request, call_next):
+    # before / filter / decorate / terminate
+    response = await call_next(request)
+    # after
+    return response
+```
+
+
 ``` java
 // Spring Boot
 @Component
@@ -172,6 +183,18 @@ var exampleMiddleware = function (req, res, next) {
 app.use(exampleMiddleware)
 ```
 
+``` python
+# Django
+class ExampleMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # before / filter / decorate / terminate
+        response = self.get_response(request)
+        # after
+        return response
+```
 
 ## Parameters
 ``` csharp
@@ -179,6 +202,22 @@ app.use(exampleMiddleware)
 [Authorize(Roles = "Admin")]
 public class ProductController : ControllerBase { }
 ```
+
+``` php
+// Laravel
+class AuthorizeMiddleware
+{
+    public function handle($request, Closure $next, $role)
+    {
+        // ...
+    }
+}
+
+Route::put('...', function ($id) {
+    //
+})->middleware('AuthorizeMiddleware:admin');
+```
+
 
 ``` python
 # FastAPI
@@ -203,6 +242,21 @@ app.use(authorizationMiddleware('admin'))
 ```
 
 ## Conventions
+
+``` php
+// Laravel
+protected $middlewareGroups = [
+   'public' => [
+        'throttle:60,1',
+        \App\Http\Middleware\ExampleMiddleware::class,
+    ],
+    // ...
+];
+
+Route::group(['middleware' => ['public']], function () {
+    // route definitions
+});
+```
 
 ## Order
 

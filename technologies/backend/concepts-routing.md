@@ -1,5 +1,4 @@
 # Routing
-Routing is the process of mapping http requests to handlers
 
 ## Basic routing
 
@@ -19,7 +18,7 @@ R4 - Wildcard parameter: Parameter in path can be
 R5 - Constraint: Parameter in path can be constrained to match certain rules (e.g. only numbers)
 
 ``` csharp
-// .NET Core
+// ASP.NET Core
 [Route("products")]
 [ApiController]
 public class ProductsController : ControllerBase
@@ -34,7 +33,13 @@ public class ProductsController : ControllerBase
   public Product Update(int id, [FromBody]ProductModel product)
   {
       // ...
-  }   
+  } 
+
+  [HttpGet("files/{*path}")]
+  public FileResult GetFile(string path)
+  {
+    // ...  
+  }  
 }
 ```
 
@@ -53,6 +58,11 @@ export class ProductsController {
   getSingle(@Param('id') id: number): ProductModel {
     // return single product
   }
+
+  @Get('files/:path(*)')
+  getFile(@Param('path') path: string) {
+    // ...
+  }
 }
 ```
 
@@ -65,6 +75,10 @@ Route::get('products', function () {
 Route::get('products/{id}', function ($id) {
     // return single product
 });
+
+Route::get('files/{path}', function ($path) {
+    // ...
+})->where('path', '.*');
 ```
 
 ``` python
@@ -143,8 +157,174 @@ app.get('/products/:id(\\d+)', function (req, res) {
 })
 ```
 
+``` csharp
+// ServiceStack
+[Route("/products/{Id}", "GET")]
+public class GetProduct : IReturn<Product>
+{
+    public int Id { get; set; }
+}
+
+public class ProductService : Service
+{
+    public object Get(GetProduct request)
+    {
+        // ...
+    }
+}
+```
+
+``` python
+# Flask
+@app.route('/products/<int:id>', methods=['GET'])
+def get_product(id):
+  # ...
+
+@app.route('/products/<path:file>', methods=['GET'])
+def get_file(file):
+    # ...
+```
+
+``` php
+// CakePHP
+$routes->get(
+    '/products/{id}',
+    ['controller' => 'Products', 'action' => 'details'],
+)
+->setPatterns(['id' => '\d+'])
+->setPass(['id']);
+```
+
+``` java
+// DropWizard
+@Path("/products")
+public class ProductResource {
+    @GET
+    @Path("/{id}")
+    public String getProduct(@PathParam("id") Long id) {
+        // ...
+    }
+}
+```
+
+``` js
+// Restify
+server.get('products/:id', function rm(req, res, next) {
+  // ...
+});
+```
+
+``` js
+// hapi
+server.route({
+    method: 'GET',
+    path: '/files/{path*}',
+    handler: function (request, h) {
+        // ...
+    }
+});
+```
+
+``` ini
+# Play Framework
+GET   /products/$id<[0-9]+>   controllers.Products.details(id: Long)
+GET   /files/*path            controllers.Files.getFile(path: String)
+```
+
+
+``` java
+// Micronaut
+@Controller("/products") 
+public class ProductsController {
+
+    @Get("/{id}") 
+    public String details(@PathVariable Integer id) { 
+        // ...
+    }
+    @Pout("/{id}")
+    public Single<HttpResponse<Person>> update(@PathVariable Integer id, @Body Single<Product> product) { 
+        // ...
+    }
+}
+```
+
+``` js
+// Sails
+module.exports.routes = {
+  'GET /products/:id': 'ProductsController.details',
+  'PUT /products/:id': { controller: 'products', action: 'update' }
+}
+```
+
+``` java
+// Vert.x
+Route route = router.routeWithRegex("\\/products\\/(?<id>[0-9]+)").method(HttpMethod.PUT)
+  .handler(routingContext -> {
+    String productId = routingContext.request().getParam("id");
+  // ...
+  }
+);
+```
+
+``` php
+// Slim
+$app->get('/products/{id:[0-9]+}', function (Request $request, Response $response, array $args) {
+    $id = $args['id'];
+    // ...
+});
+```
+
+``` python
+# AIOHTTP
+app.add_routes([
+  web.get(r'products/{id:\d+}', getProductDetails)
+  #...
+]
+```
+
+``` php
+// CodeIgniter
+$routes->get('products/(\d+)', 'Products::details/$1');
+```
+
+``` python
+# Falcon
+class ProductResource(object):
+    def on_get(self, req, resp):
+        # ...
+
+product_resource = ProductResource()
+
+api.add_route(
+    '/products/{id:int}',
+    product_resource
+)
+```
+
+``` php
+// Phalcon
+$router->addGet(
+    '/products/{id:[0-9]+}',
+    [
+        'controller' => 'products',
+        'action'     => 'details'
+);
+$router->addGet(
+    '/files/{path:.*}',
+    [
+        'controller' => 'files',
+        'action'     => 'details'
+);
+```
+
+``` python
+# Tornado
+
+```
+
 ### Constraints
 ``` csharp
+// ASP.NET Core
 [HttpGet("{id:guid}")]
 public Product GetDetails(Guid id)
 {
@@ -154,7 +334,6 @@ public Product GetDetails(Guid id)
 
 ``` php
 // Laravel
-
 Route::get('products/{id}', function ($id) {
     //
 })->where('id', '[0-9]+');
@@ -185,8 +364,7 @@ E.g. all endpoints start with "/api/*"
 ```
 
 ``` csharp
-// .NET Core
-
+// ASP.NET Core
 [Route("api/[controller]")]
 public class CustomBaseController : ControllerBase
 {  
@@ -196,17 +374,15 @@ public class ProductsController : CustomBaseController
 {
     // all endpoints have route /api/products/...
 }
-
+```
 ``` ts
 // NestJS
-
 const app = await NestFactory.create(AppModule);
 app.setGlobalPrefix('api');
 ```
 
 ```php
 // Laravel
-
 Route::prefix('api')->group(function () {
     Route::get('products', function () {
       // ...
@@ -227,6 +403,19 @@ public class ProductsController {
 prefix=/api
 ```
 
+``` js
+// Express
+app.use('/api', router);
+```
+
+``` php
+// CakePHP
+$routes->prefix('api', function (RouteBuilder $routes) {
+    $routes->get(/**/)
+});
+```
+
+
 ### Reverse routing
 Reverse routing is creating an URL based on route and its parameters
 
@@ -241,7 +430,7 @@ url = router.url('user-details', { id: 123} )
 
 
 ```csharp
-//.NET Core
+// ASP.NET Core
 [HttpGet("{id}", Name = "product-details")]
 public IActionResult GetSingle(int id)
 {
@@ -262,6 +451,19 @@ Route::get('products/{id}', function () {
 $url = route('product-details', ['id' => 123]);
 ```
 
+``` php
+// CakePHP
+$routes->get(
+    '/products/{id}',
+    ['controller' => 'Products', 'action' => 'details'],
+    ['_name' => 'product-details']
+)
+->setPatterns(['id' => '\d+'])
+->setPass(['id']);
+
+Router::pathUrl('Products::details', [123]);
+Router::url(['_name' => 'product-details', 'id' => 123]);
+``` 
 
 ### Subdomain
 - Multitenancy ```{client}.example.com/products```
@@ -287,6 +489,19 @@ Route::domain('{client}.example.com')->group(function () {
         // ...
     });
 });
+```
+
+``` php
+// Symfony
+$routes->add('product-list', '/products')
+    ->controller([ProductsController::class, 'list'])
+    ->host('{client}.example.com');
+```
+
+``` php
+// CodeIgniter
+$routes->add('products', 'Products::list_client1', ['subdomain' => 'client1']);
+$routes->add('products', 'Products::list_client2', ['subdomain' => 'client2']);
 ```
 
 ### Versioning
@@ -333,6 +548,7 @@ server.get('/products/:id', restify.plugins.conditionalHandler([
 
 ``` csharp
 // ASP.NET Core
+// Nuget: Microsoft.AspNetCore.Mvc.Versioning
 // startup.cs
 services.AddApiVersioning(config =>
 {
@@ -375,7 +591,7 @@ public class ProductsController : ControllerBase
 // ASP.NET Core
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider("/path/to/files"),
+    FileProvider = new PhysicalFileProvider("path/to/files"),
     RequestPath = "/assets"
 });
 ```
@@ -395,7 +611,12 @@ export class AppModule {}
 
 ``` python
 # FastAPI
-app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+app.mount("/assets", StaticFiles(directory="path/to/files"), name="assets")
+```
+
+``` js
+// Express
+app.use('/assets', express.static('path/to/files'))
 ```
 
 ### Rate limiting
