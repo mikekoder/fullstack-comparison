@@ -39,7 +39,13 @@ public class ProductsController : ControllerBase
   public FileResult GetFile(string path)
   {
     // ...  
-  }  
+  } 
+
+  [HttpGet("{id:guid}")]
+  public Product GetDetails(Guid id)
+  {
+      // ...
+  }   
 }
 ```
 
@@ -74,7 +80,7 @@ Route::get('products', function () {
 
 Route::get('products/{id}', function ($id) {
     // return single product
-});
+})->where('id', '[0-9]+');
 
 Route::get('files/{path}', function ($path) {
     // ...
@@ -85,7 +91,11 @@ Route::get('files/{path}', function ($path) {
 # FastAPI
 @app.get("/products/{id}")
 async def get_product(id: int):
-    return #...
+    #...
+
+@app.get("/files/{path:path}")
+async def get_file(path: str):
+    # ...
 ```
 
 ``` java
@@ -93,7 +103,7 @@ async def get_product(id: int):
 @RestController
 class ProductController {
 
-  @GetMapping("/products/{id}")
+  @GetMapping("/products/{id:\\d+}")
   Product getSingle(@PathVariable Long id) {
     // return single product
   }
@@ -102,6 +112,12 @@ class ProductController {
   void deleteProduct(@PathVariable Long id) {
     // delete product
   }
+
+  @GetMapping("/files/{*path}")
+  File getSingle(@PathVariable String path) {
+    // return single product
+  }
+
 }
 ```
 
@@ -147,6 +163,12 @@ return function (RoutingConfigurator $routes) {
         ->controller([ProductController::class, 'get_details'])
         ->methods(['GET'])
     ;
+    $routes->add('get_file', '/files/{path}')
+        ->controller([FileController::class, 'get_file'])
+        ->requirements([
+            'path' => '.+',
+        ])
+    ;
 };
 ```
 
@@ -172,6 +194,18 @@ public class ProductService : Service
         // ...
     }
 }
+
+[Route("/files/{Path*}")]
+public class GetFile : IReturn<File>
+{
+    public string Path { get; set; }
+}
+
+[Route("/users/{Id}", Matches = "**/{int}")]
+public class GetUser
+{
+    public int Id { get; set; }
+}
 ```
 
 ``` python
@@ -193,6 +227,11 @@ $routes->get(
 )
 ->setPatterns(['id' => '\d+'])
 ->setPass(['id']);
+
+$routes->get(
+    '/files/**',
+    ['controller' => 'Files', 'action' => 'get']
+);
 ```
 
 ``` java
@@ -204,6 +243,12 @@ public class ProductResource {
     public String getProduct(@PathParam("id") Long id) {
         // ...
     }
+
+    @GET
+    @Path("files/{path:.+")
+    public String getProduct(@PathParam("path") String path) {
+        // ...
+    }
 }
 ```
 
@@ -212,6 +257,11 @@ public class ProductResource {
 server.get('products/:id', function rm(req, res, next) {
   // ...
 });
+
+server.get(/files\/(.*)/, function(req, res, next) {
+  // ...
+});
+
 ```
 
 ``` js
@@ -322,28 +372,6 @@ $router->addGet(
 
 ```
 
-### Constraints
-``` csharp
-// ASP.NET Core
-[HttpGet("{id:guid}")]
-public Product GetDetails(Guid id)
-{
-    // ...
-}  
-```
-
-``` php
-// Laravel
-Route::get('products/{id}', function ($id) {
-    //
-})->where('id', '[0-9]+');
-
-Route::get('products/{code}', function ($code) {
-    //
-})->where('code', '[A-Za-z0-9]+');
-```
-
-
 ## Advanced
 
 R6 - Prefix: Certain prefix can be applied and changed to many routes at once (e.g. all endpoints start with /api/)  
@@ -411,8 +439,29 @@ app.use('/api', router);
 ``` php
 // CakePHP
 $routes->prefix('api', function (RouteBuilder $routes) {
-    $routes->get(/**/)
+    $routes->get(/* ... */)
 });
+```
+
+``` csharp
+// ServiceStack
+public class AppHost : AppHostBase
+{
+    //...
+    public override RouteAttribute[] GetRouteAttributes(Type requestType)
+    {
+        var routes = base.GetRouteAttributes(requestType);
+        routes.Each(x => x.Path = "/api" + x.Path);
+        return routes;
+    }
+}
+```
+
+``` php
+// Symfony
+$routes->import('../api/Controller/', 'annotation')
+  ->prefix('/api')
+;
 ```
 
 
@@ -464,6 +513,18 @@ $routes->get(
 Router::pathUrl('Products::details', [123]);
 Router::url(['_name' => 'product-details', 'id' => 123]);
 ``` 
+
+``` csharp
+// ServiceStack
+[Route("/products/{Id}", "GET")]
+public class GetProduct : IReturn<Product>
+{
+    public int Id { get; set; }
+}
+
+var relativeUrl = new GetProduct { Id = 123 }.ToGetUrl();
+var absoluteUrl = new GetProduct { Id = 123 }.ToAbsoluteUri();
+```
 
 ### Subdomain
 - Multitenancy ```{client}.example.com/products```
@@ -651,4 +712,14 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapFallbackToFile("/index.html");
 });
+```
+
+
+``` csharp
+// ServiceStack
+[FallbackRoute("/{Path}")]
+public class Fallback
+{
+    public string Path { get; set; }
+}
 ```
