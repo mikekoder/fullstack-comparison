@@ -17,6 +17,19 @@ R3 - Parameters: Can capture variables from path patterns
 R4 - Wildcard parameter: Parameter in path can be  
 R5 - Constraint: Parameter in path can be constrained to match certain rules (e.g. only numbers)
 
+#### AIOHTTP
+``` python
+# AIOHTTP
+app.add_routes([
+  web.get(r'products/{id:\d+}', getProductDetails)
+  #...
+]
+```
+
+#### Akka HTTP
+
+
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 [Route("products")]
@@ -49,6 +62,166 @@ public class ProductsController : ControllerBase
 }
 ```
 
+#### CakePHP
+``` php
+// CakePHP
+$routes->get(
+    '/products/{id}',
+    ['controller' => 'Products', 'action' => 'details'],
+)
+->setPatterns(['id' => '\d+'])
+->setPass(['id']);
+
+$routes->get(
+    '/files/**',
+    ['controller' => 'Files', 'action' => 'get']
+);
+```
+
+#### CodeIgniter
+``` php
+// CodeIgniter
+$routes->get('products/(\d+)', 'Products::details/$1');
+```
+
+#### Django / Django REST Framework
+``` python
+# Django REST Framework
+@api_view(['GET'])
+def product_list(request):
+  return #...
+
+@api_view(['PUT'])
+def update_product(request, id):
+  # ...
+
+urlpatterns = [
+    path('products/', views.product_list),
+    path('products/<int:id>', views.update_product),
+    # ...
+]
+```
+
+#### DropWizard
+``` java
+// DropWizard
+@Path("/products")
+public class ProductResource {
+    @GET
+    @Path("/{id}")
+    public String getProduct(@PathParam("id") Long id) {
+        // ...
+    }
+
+    @GET
+    @Path("files/{path:.+")
+    public String getProduct(@PathParam("path") String path) {
+        // ...
+    }
+}
+```
+
+#### Express
+``` js
+// Express
+app.get('/products/:id(\\d+)', function (req, res) {
+  // ...
+})
+```
+
+#### Falcon
+``` python
+# Falcon
+class ProductResource(object):
+    def on_get(self, req, resp):
+        # ...
+
+product_resource = ProductResource()
+
+api.add_route(
+    '/products/{id:int}',
+    product_resource
+)
+```
+
+#### FastAPI
+``` python
+# FastAPI
+@app.get("/products/{id}")
+async def get_product(id: int):
+    #...
+
+@app.get("/files/{path:path}")
+async def get_file(path: str):
+    # ...
+```
+
+#### Feathers.js
+
+#### Flask
+``` python
+# Flask
+@app.route('/products/<int:id>', methods=['GET'])
+def get_product(id):
+  # ...
+
+@app.route('/products/<path:file>', methods=['GET'])
+def get_file(file):
+    # ...
+```
+
+#### hapi
+``` js
+// hapi
+server.route({
+    method: 'GET',
+    path: '/files/{path*}',
+    handler: function (request, h) {
+        // ...
+    }
+});
+```
+
+#### koa
+
+#### Laravel
+```php
+// Laravel
+Route::get('products', function () {
+    // return list of products
+});
+
+Route::get('products/{id}', function ($id) {
+    // return single product
+})->where('id', '[0-9]+');
+
+Route::get('files/{path}', function ($path) {
+    // ...
+})->where('path', '.*');
+```
+
+#### Micronaut
+``` java
+// Micronaut
+@Controller("/products") 
+public class ProductsController {
+
+    @Get("/{id:\\d+}") 
+    public String details(@PathVariable Integer id) { 
+        // ...
+    }
+    @Put("/{id:\\d+}")
+    public Single<HttpResponse<Person>> update(@PathVariable Integer id, @Body Single<Product> product) { 
+        // ...
+    }
+    @Get("/files/{path:.+}") 
+    public String file(@PathVariable String path) { 
+        // ...
+    }
+}
+```
+
+#### NestJS
 ``` ts
 // NestJS
 @Controller('products')
@@ -72,72 +245,31 @@ export class ProductsController {
 }
 ```
 
-```php
-// Laravel
-Route::get('products', function () {
-    // return list of products
-});
-
-Route::get('products/{id}', function ($id) {
-    // return single product
-})->where('id', '[0-9]+');
-
-Route::get('files/{path}', function ($path) {
-    // ...
-})->where('path', '.*');
+#### Phalcon
+``` php
+// Phalcon
+$router->addGet(
+    '/products/{id:[0-9]+}',
+    [
+        'controller' => 'products',
+        'action'     => 'details'
+);
+$router->addGet(
+    '/files/{path:.*}',
+    [
+        'controller' => 'files',
+        'action'     => 'details'
+);
 ```
 
-``` python
-# FastAPI
-@app.get("/products/{id}")
-async def get_product(id: int):
-    #...
-
-@app.get("/files/{path:path}")
-async def get_file(path: str):
-    # ...
+#### Play Framework
+``` ini
+# Play Framework
+GET   /products/$id<[0-9]+>   controllers.Products.details(id: Long)
+GET   /files/*path            controllers.Files.getFile(path: String)
 ```
 
-``` java
-// Spring Boot
-@RestController
-class ProductController {
-
-  @GetMapping("/products/{id:\\d+}")
-  Product getSingle(@PathVariable Long id) {
-    // return single product
-  }
-
-  @DeleteMapping("/products/{id}")
-  void deleteProduct(@PathVariable Long id) {
-    // delete product
-  }
-
-  @GetMapping("/files/{*path}")
-  File getSingle(@PathVariable String path) {
-    // return single product
-  }
-
-}
-```
-
-``` python
-# Django REST Framework
-@api_view(['GET'])
-def product_list(request):
-  return #...
-
-@api_view(['PUT'])
-def update_product(request, id):
-  # ...
-
-urlpatterns = [
-    path('products/', views.product_list),
-    path('products/<int:id>', views.update_product),
-    # ...
-]
-```
-
+#### Quarkus
 ``` java
 // Quarkus
 @Path("/products")
@@ -156,29 +288,29 @@ public class ProductResource {
 }
 ```
 
-``` php
-// Symfony
-return function (RoutingConfigurator $routes) {
-    $routes->add('product_details', '/products/{id<\d+>}')
-        ->controller([ProductController::class, 'get_details'])
-        ->methods(['GET'])
-    ;
-    $routes->add('get_file', '/files/{path}')
-        ->controller([FileController::class, 'get_file'])
-        ->requirements([
-            'path' => '.+',
-        ])
-    ;
-};
-```
-
+#### restify
 ``` js
-// Express
-app.get('/products/:id(\\d+)', function (req, res) {
+// Restify
+server.get('products/:id', function rm(req, res, next) {
   // ...
-})
+});
+
+server.get(/files\/(.*)/, function(req, res, next) {
+  // ...
+});
+
 ```
 
+#### Sails.js
+``` js
+// Sails
+module.exports.routes = {
+  'GET /products/:id': 'ProductsController.details',
+  'PUT /products/:id': { controller: 'products', action: 'update' }
+}
+```
+
+#### ServiceStack
 ``` csharp
 // ServiceStack
 [Route("/products/{Id}", "GET")]
@@ -208,104 +340,60 @@ public class GetUser
 }
 ```
 
-``` python
-# Flask
-@app.route('/products/<int:id>', methods=['GET'])
-def get_product(id):
-  # ...
-
-@app.route('/products/<path:file>', methods=['GET'])
-def get_file(file):
-    # ...
-```
-
+#### Slim
 ``` php
-// CakePHP
-$routes->get(
-    '/products/{id}',
-    ['controller' => 'Products', 'action' => 'details'],
-)
-->setPatterns(['id' => '\d+'])
-->setPass(['id']);
-
-$routes->get(
-    '/files/**',
-    ['controller' => 'Files', 'action' => 'get']
-);
+// Slim
+$app->get('/products/{id:[0-9]+}', function (Request $request, Response $response, array $args) {
+    // ...
+});
+$app->get('/files/{path:.+}', function ($request, $response, $args) {
+    // ...
+});
 ```
 
+#### Spring (Boot)
 ``` java
-// DropWizard
-@Path("/products")
-public class ProductResource {
-    @GET
-    @Path("/{id}")
-    public String getProduct(@PathParam("id") Long id) {
-        // ...
-    }
+// Spring Boot
+@RestController
+class ProductController {
 
-    @GET
-    @Path("files/{path:.+")
-    public String getProduct(@PathParam("path") String path) {
-        // ...
-    }
+  @GetMapping("/products/{id:\\d+}")
+  Product getSingle(@PathVariable Long id) {
+    // return single product
+  }
+
+  @DeleteMapping("/products/{id}")
+  void deleteProduct(@PathVariable Long id) {
+    // delete product
+  }
+
+  @GetMapping("/files/{*path}")
+  File getSingle(@PathVariable String path) {
+    // return single product
+  }
+
 }
 ```
 
-``` js
-// Restify
-server.get('products/:id', function rm(req, res, next) {
-  // ...
-});
-
-server.get(/files\/(.*)/, function(req, res, next) {
-  // ...
-});
-
+#### Symfony
+``` php
+// Symfony
+return function (RoutingConfigurator $routes) {
+    $routes->add('product_details', '/products/{id<\d+>}')
+        ->controller([ProductController::class, 'get_details'])
+        ->methods(['GET'])
+    ;
+    $routes->add('get_file', '/files/{path}')
+        ->controller([FileController::class, 'get_file'])
+        ->requirements([
+            'path' => '.+',
+        ])
+    ;
+};
 ```
 
-``` js
-// hapi
-server.route({
-    method: 'GET',
-    path: '/files/{path*}',
-    handler: function (request, h) {
-        // ...
-    }
-});
-```
-
-``` ini
-# Play Framework
-GET   /products/$id<[0-9]+>   controllers.Products.details(id: Long)
-GET   /files/*path            controllers.Files.getFile(path: String)
-```
-
-
-``` java
-// Micronaut
-@Controller("/products") 
-public class ProductsController {
-
-    @Get("/{id}") 
-    public String details(@PathVariable Integer id) { 
-        // ...
-    }
-    @Pout("/{id}")
-    public Single<HttpResponse<Person>> update(@PathVariable Integer id, @Body Single<Product> product) { 
-        // ...
-    }
-}
-```
-
-``` js
-// Sails
-module.exports.routes = {
-  'GET /products/:id': 'ProductsController.details',
-  'PUT /products/:id': { controller: 'products', action: 'update' }
-}
-```
-
+#### Tornado
+#### Vert.x
 ``` java
 // Vert.x
 Route route = router.routeWithRegex("\\/products\\/(?<id>[0-9]+)").method(HttpMethod.PUT)
@@ -314,62 +402,12 @@ Route route = router.routeWithRegex("\\/products\\/(?<id>[0-9]+)").method(HttpMe
   // ...
   }
 );
-```
-
-``` php
-// Slim
-$app->get('/products/{id:[0-9]+}', function (Request $request, Response $response, array $args) {
-    $id = $args['id'];
-    // ...
-});
-```
-
-``` python
-# AIOHTTP
-app.add_routes([
-  web.get(r'products/{id:\d+}', getProductDetails)
-  #...
-]
-```
-
-``` php
-// CodeIgniter
-$routes->get('products/(\d+)', 'Products::details/$1');
-```
-
-``` python
-# Falcon
-class ProductResource(object):
-    def on_get(self, req, resp):
-        # ...
-
-product_resource = ProductResource()
-
-api.add_route(
-    '/products/{id:int}',
-    product_resource
-)
-```
-
-``` php
-// Phalcon
-$router->addGet(
-    '/products/{id:[0-9]+}',
-    [
-        'controller' => 'products',
-        'action'     => 'details'
+Route route = router.routeWithRegex("\\/files\\/(?<path>.+)").method(HttpMethod.PUT)
+  .handler(routingContext -> {
+    String productId = routingContext.request().getParam("id");
+  // ...
+  }
 );
-$router->addGet(
-    '/files/{path:.*}',
-    [
-        'controller' => 'files',
-        'action'     => 'details'
-);
-```
-
-``` python
-# Tornado
-
 ```
 
 ## Advanced
@@ -714,6 +752,12 @@ app.UseEndpoints(endpoints =>
 });
 ```
 
+``` php
+// Laravel
+Route::fallback(function () {
+    // ...
+});
+```
 
 ``` csharp
 // ServiceStack

@@ -56,6 +56,23 @@ app.add_middleware(
 
 ## Before / after / filter / decorate / terminate
 
+``` java
+// Akka HTTP
+public Route exampleDirective(String role, Supplier<Route> inner) {
+  // before / filter / decorate / terminate
+  Route result = inner.get();
+  // after
+  return result;
+}
+
+Route route = get(() ->
+  path("api", () ->
+    exampleDirective('admin', () => /* handler*/)
+  )
+);
+```
+
+
 ``` csharp
 // ASP.NET Core
 app.Use((context, next) => 
@@ -196,6 +213,226 @@ class ExampleMiddleware:
         return response
 ```
 
+``` java
+// Quarkus (jersey filters)
+@Provider
+public class ExampleRequestFilter implements ContainerRequestFilter {
+
+    @Override
+    public void filter(ContainerRequestContext ctx) {
+        // before / filter / decorate / terminate
+    }
+}
+@Provider
+public class ExampleResponseFilter implements ContainerResponseFilter {
+ 
+    @Override
+    public void filter(ContainerRequestContext reqCtx, ContainerResponseContext resCtx) {
+        // after
+    }
+}
+```
+
+``` php
+// CakePHP
+class ExampleMiddleware implements MiddlewareInterface
+{
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $handler
+    ): ResponseInterface
+    {
+        // before / filter / decorate / terminate
+        $response = $handler->handle($request);
+        // after
+
+        return $response;
+    }
+}
+```
+
+``` python
+# Flask
+def process_request(sender, **extra):
+  # before / filter / decorate / terminate
+
+def process_response(sender, response, **extra):
+  # after
+
+request_started.connect(process_request, app)
+request_finished.connect(process_response, app)
+```
+
+``` python
+# Flask
+def example_decorator(f):
+  @wraps(f)
+  def decorated_function(*args, **kwargs):
+    # ...
+    return f(*args, **kwargs)
+  return decorated_function
+
+@app.route('/path')
+@example_decorator
+def get_page():
+  # ...
+```
+
+``` python
+# Flask
+class ExampleMiddleware(object):
+
+  def __init__(self, app):
+    self.app = app
+
+  def __call__(self, environ, start_response):
+    # before / filter / decorate / terminate 
+    response = self.app(environ, start_response)
+    # after
+    return response
+
+app.wsgi_app = ExampleMiddleware(app.wsgi_app)
+```
+
+``` js
+// restify
+server.use(function(req, res, next) {
+    // before / filter / decorate / terminate
+    next();
+    // after
+});
+```
+
+``` java
+// Dropwizard (jersey filters)
+@Provider
+public class ExampleRequestFilter implements ContainerRequestFilter {
+
+    @Override
+    public void filter(ContainerRequestContext ctx) {
+        // before / filter / decorate / terminate
+    }
+}
+@Provider
+public class ExampleResponseFilter implements ContainerResponseFilter {
+ 
+    @Override
+    public void filter(ContainerRequestContext reqCtx, ContainerResponseContext resCtx) {
+        // after
+    }
+}
+```
+
+``` php
+// Slim
+$exampleMiddleware = function (Request $request, RequestHandler $handler) {
+    // before / filter / decorate / terminate
+    $response = $handler->handle($request);
+    // after
+    return $response;
+};
+
+$app->add($exampleMiddleware);
+```
+
+
+``` js
+// hapi
+const examplePlugin = {
+  name: 'example',
+  version: '1.0.0',
+  register: async function (server, options) {
+    server.ext('onRequest', function (request, h) {
+      // before / filter / decorate / terminate 
+      return h.continue;
+    });
+    server.ext('onPreResponse', function (request, h) {
+      // after
+      return h.continue;
+    });
+  }
+};
+```
+
+``` java
+// Play framework
+public class ExampleFilter extends Filter {
+
+  @Override
+  public CompletionStage<Result> apply(
+    Function<Http.RequestHeader, CompletionStage<Result>> nextFilter,
+    Http.RequestHeader requestHeader) {
+    // before / filter / decorate / terminate 
+    return nextFilter
+        .apply(requestHeader)
+        .thenApply(
+            result -> {
+              // after
+              return result;
+            });
+  }
+}
+```
+
+``` java
+// Micronaut
+@Filter("/api/**") 
+public class ExampleFilter implements HttpServerFilter { 
+    
+    ​@Override
+   ​public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
+      // before / filter / decorate / terminate 
+      Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(request);
+      return Publishers.map(
+          chain.proceed(request),
+          response ->  /* after */
+      );
+}
+```
+
+``` js
+// Sails
+module.exports.http = {
+
+  middleware: {
+    order: [
+      // ...
+      'example'
+      // ...
+    ],
+
+    example: (function (){
+      return function (req,res,next) {
+        // before / filter / decorate / terminate 
+        next();
+        // after
+      };
+    })()
+  }
+}
+```
+``` js
+// koa
+app.use(async (ctx, next) => {
+   // before / filter / decorate / terminate 
+  await next();
+  // after
+});
+```
+
+``` java
+// Vert.x
+Route route = router.route("/path/");
+route.handler(routingContext -> {
+  // before / filter / decorate / terminate
+  routingContext.next();
+  // after
+});
+route.handler(routingContext -> {
+  // main handler
+});
+```
+
 ## Parameters
 ``` csharp
 // ASP.NET Core
@@ -241,6 +478,14 @@ var authorizationMiddleware = function(role){
 app.use(authorizationMiddleware('admin'))
 ```
 
+``` php
+// CakePHP
+public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
+{
+    $middlewareQueue->add(new AuthorizationMiddleware('admin'));
+}
+```
+
 ## Conventions
 
 ``` php
@@ -258,7 +503,36 @@ Route::group(['middleware' => ['public']], function () {
 });
 ```
 
+``` php
+// Slim
+
+$middleware = function (Request $request, RequestHandler $handler) {
+    // ...
+};
+
+$app->group('/api', function (RouteCollectorProxy $group) {
+    // route config
+})->add($middleware);
+```
+
 ## Order
+
+``` php
+// CakePHP
+$middleware = new \App\Middleware\ExampleMiddleware;
+
+$middlewareQueue->add($middleware);       // last
+$middlewareQueue->prepend($middleware);   // first
+$middlewareQueue->insertAt(2, $middleware);
+$middlewareQueue->insertBefore(
+    'App\Middleware\OtherMiddleware',
+    $middleware
+);
+$middlewareQueue->insertAfter(
+    'App\Middleware\OtherMiddleware',
+    $middleware
+);
+```
 
 ## Content negotiation
 HTTP request headers include *Content-Type* which describes the type of the body and *Accept* which describes the desired type for the response. Usually it's possible to read header values in the handler code and use branching logic to decide which parsers and serializers to use.
