@@ -31,6 +31,7 @@ app.middleware((request, response, next) => {
 ```
 ## Cors
 
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 services.AddCors(options =>
@@ -41,11 +42,7 @@ services.AddCors(options =>
 app.UseCors();
 ```
 
-``` ts
-// NestJS
-app.enableCors(/* configuration */);
-```
-
+#### FastAPI
 ``` python
 # FastAPI
 app.add_middleware(
@@ -54,8 +51,28 @@ app.add_middleware(
 )
 ``` 
 
+#### NestJS
+``` ts
+// NestJS
+app.enableCors(/* configuration */);
+```
+
+
+
 ## Before / after / filter / decorate / terminate
 
+#### AIOHTTP
+``` python
+# AIOHTTP
+@middleware
+async def example_middleware(request, handler):
+  # before / filter / decorate / terminate
+  resp = await handler(request)
+  # after
+  return resp
+```
+
+#### Akka HTTP
 ``` java
 // Akka HTTP
 public Route exampleDirective(String role, Supplier<Route> inner) {
@@ -72,7 +89,7 @@ Route route = get(() ->
 );
 ```
 
-
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 app.Use((context, next) => 
@@ -121,118 +138,7 @@ public abstract class ExampleControllerBase : Controller
 }
 ```
 
-
-``` ts
-// NestJS
-@Injectable()
-export class ExampleMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: Function) {
-    // before / filter / decorate
-    // skip call / throw exception to terminate
-    next();
-    // after
-  }
-}
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(ExampleMiddleware)
-      .forRoutes('products');
-  }
-}
-```
-
-```php
-// Laravel
-class ExampleMiddleware
-{
-    public function handle($request, Closure $next)
-    {
-        // before / filter / decorate / terminate
-        $next($request);
-        // after
-    }
-}
-```
-
-``` python
-# FastAPI
-@app.middleware("http")
-async def example_middleware(request: Request, call_next):
-    # before / filter / decorate / terminate
-    response = await call_next(request)
-    # after
-    return response
-```
-
-
-``` java
-// Spring Boot
-@Component
-public class ExampleInterceptor implements HandlerInterceptor {
-  @Override
-  public boolean preHandle(
-    HttpServletRequest request, 
-    HttpServletResponse response, 
-    Object handler) throws Exception {
-    // before / filter / decorate / terminate
-    return true;
-  }
-  @Override
-  public void postHandle(
-    HttpServletRequest request,
-    HttpServletResponse response, 
-    Object handler, 
-    ModelAndView modelAndView) throws Exception {
-      // after
-  }
-}
-```
-
-``` js
-// Express
-var exampleMiddleware = function (req, res, next) {
-  // before / filter / decorate / terminate
-  next()
-  // after
-}
-
-app.use(exampleMiddleware)
-```
-
-``` python
-# Django
-class ExampleMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        # before / filter / decorate / terminate
-        response = self.get_response(request)
-        # after
-        return response
-```
-
-``` java
-// Quarkus (jersey filters)
-@Provider
-public class ExampleRequestFilter implements ContainerRequestFilter {
-
-    @Override
-    public void filter(ContainerRequestContext ctx) {
-        // before / filter / decorate / terminate
-    }
-}
-@Provider
-public class ExampleResponseFilter implements ContainerResponseFilter {
- 
-    @Override
-    public void filter(ContainerRequestContext reqCtx, ContainerResponseContext resCtx) {
-        // after
-    }
-}
-```
-
+#### CakePHP
 ``` php
 // CakePHP
 class ExampleMiddleware implements MiddlewareInterface
@@ -251,6 +157,114 @@ class ExampleMiddleware implements MiddlewareInterface
 }
 ```
 
+#### CodeIgniter
+#### Django / Django REST framework
+``` python
+# Django
+class ExampleMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # before / filter / decorate / terminate
+        response = self.get_response(request)
+        # after
+        return response
+```
+
+#### Dropwizard
+``` java
+// Dropwizard (jersey filters)
+@Provider
+public class ExampleRequestFilter implements ContainerRequestFilter {
+
+    @Override
+    public void filter(ContainerRequestContext ctx) {
+        // before / filter / decorate / terminate
+    }
+}
+@Provider
+public class ExampleResponseFilter implements ContainerResponseFilter {
+ 
+    @Override
+    public void filter(ContainerRequestContext reqCtx, ContainerResponseContext resCtx) {
+        // after
+    }
+}
+```
+
+#### Express
+``` js
+// Express
+var exampleMiddleware = function (req, res, next) {
+  // before / filter / decorate / terminate
+  next()
+  // after
+}
+
+app.use(exampleMiddleware)
+```
+
+#### Falcon
+``` python
+# Falcon
+class ExampleMiddleware(object):
+  def process_request(self, req, resp):
+    # before / filter / decorate / terminate 
+
+  def process_response(self, req, resp, resource, req_succeeded):
+    # after
+```
+
+``` python
+# Falcon
+def validate_data(req, resp, resource, params):
+  # ...
+def modify_response(req, resp, resource, params):
+  # ...
+
+@falcon.before(validate_data)
+@falcon.after(modify_response)
+def on_post(self, req, resp):
+  # ...
+```
+
+#### FastAPI
+``` python
+# FastAPI
+@app.middleware("http")
+async def example_middleware(request: Request, call_next):
+    # before / filter / decorate / terminate
+    response = await call_next(request)
+    # after
+    return response
+```
+
+#### Feathers
+``` js
+// Feathers
+const before_handler = async context => {
+  // before / filter / decorate / terminate
+  return context;
+};
+const after_handler = async context => {
+  // after
+  return context;
+};
+
+app.service('products').hooks({
+  before: {
+    create: [ before_handler ],
+    update: [ before_handler ]
+  },
+  before: {
+    create: [ after_handler ],
+    update: [ after_handler ]
+  }
+});
+```
+
+#### Flask
 ``` python
 # Flask
 def process_request(sender, **extra):
@@ -294,48 +308,7 @@ class ExampleMiddleware(object):
 app.wsgi_app = ExampleMiddleware(app.wsgi_app)
 ```
 
-``` js
-// restify
-server.use(function(req, res, next) {
-    // before / filter / decorate / terminate
-    next();
-    // after
-});
-```
-
-``` java
-// Dropwizard (jersey filters)
-@Provider
-public class ExampleRequestFilter implements ContainerRequestFilter {
-
-    @Override
-    public void filter(ContainerRequestContext ctx) {
-        // before / filter / decorate / terminate
-    }
-}
-@Provider
-public class ExampleResponseFilter implements ContainerResponseFilter {
- 
-    @Override
-    public void filter(ContainerRequestContext reqCtx, ContainerResponseContext resCtx) {
-        // after
-    }
-}
-```
-
-``` php
-// Slim
-$exampleMiddleware = function (Request $request, RequestHandler $handler) {
-    // before / filter / decorate / terminate
-    $response = $handler->handle($request);
-    // after
-    return $response;
-};
-
-$app->add($exampleMiddleware);
-```
-
-
+#### hapi
 ``` js
 // hapi
 const examplePlugin = {
@@ -354,6 +327,85 @@ const examplePlugin = {
 };
 ```
 
+#### koa
+``` js
+// koa
+app.use(async (ctx, next) => {
+   // before / filter / decorate / terminate 
+  await next();
+  // after
+});
+```
+
+#### Laravel
+```php
+// Laravel
+class ExampleMiddleware
+{
+    public function handle($request, Closure $next)
+    {
+        // before / filter / decorate / terminate
+        $next($request);
+        // after
+    }
+}
+```
+
+#### Micronaut
+``` java
+// Micronaut
+@Filter("/api/**") 
+public class ExampleFilter implements HttpServerFilter { 
+    
+    ​@Override
+   ​public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
+      // before / filter / decorate / terminate 
+      Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(request);
+      return Publishers.map(
+          chain.proceed(request),
+          response ->  /* after */
+      );
+}
+```
+
+#### NestJS
+``` ts
+// NestJS
+@Injectable()
+export class ExampleMiddleware implements NestMiddleware {
+  use(req: Request, res: Response, next: Function) {
+    // before / filter / decorate
+    // skip call / throw exception to terminate
+    next();
+    // after
+  }
+}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(ExampleMiddleware)
+      .forRoutes('products');
+  }
+}
+```
+
+#### Phalcon
+``` php
+// Phalcon
+$app->before(
+  function () use ($app) {
+    // before / filter / decorate / terminate 
+    return true;
+  }
+);
+$app->after(
+  function () use ($app) {
+    // after
+  }
+);
+```
+
+#### Play Framework
 ``` java
 // Play framework
 public class ExampleFilter extends Filter {
@@ -374,22 +426,38 @@ public class ExampleFilter extends Filter {
 }
 ```
 
+#### Quarkus
 ``` java
-// Micronaut
-@Filter("/api/**") 
-public class ExampleFilter implements HttpServerFilter { 
-    
-    ​@Override
-   ​public Publisher<MutableHttpResponse<?>> doFilter(HttpRequest<?> request, ServerFilterChain chain) {
-      // before / filter / decorate / terminate 
-      Publisher<MutableHttpResponse<?>> responsePublisher = chain.proceed(request);
-      return Publishers.map(
-          chain.proceed(request),
-          response ->  /* after */
-      );
+// Quarkus (jersey filters)
+@Provider
+public class ExampleRequestFilter implements ContainerRequestFilter {
+
+    @Override
+    public void filter(ContainerRequestContext ctx) {
+        // before / filter / decorate / terminate
+    }
+}
+@Provider
+public class ExampleResponseFilter implements ContainerResponseFilter {
+ 
+    @Override
+    public void filter(ContainerRequestContext reqCtx, ContainerResponseContext resCtx) {
+        // after
+    }
 }
 ```
 
+#### restify
+``` js
+// restify
+server.use(function(req, res, next) {
+    // before / filter / decorate / terminate
+    next();
+    // after
+});
+```
+
+#### Sails.js
 ``` js
 // Sails
 module.exports.http = {
@@ -411,15 +479,48 @@ module.exports.http = {
   }
 }
 ```
-``` js
-// koa
-app.use(async (ctx, next) => {
-   // before / filter / decorate / terminate 
-  await next();
-  // after
-});
+
+#### ServiceStack
+#### Slim
+``` php
+// Slim
+$exampleMiddleware = function (Request $request, RequestHandler $handler) {
+    // before / filter / decorate / terminate
+    $response = $handler->handle($request);
+    // after
+    return $response;
+};
+
+$app->add($exampleMiddleware);
 ```
 
+#### Spring (Boot)
+``` java
+// Spring Boot
+@Component
+public class ExampleInterceptor implements HandlerInterceptor {
+  @Override
+  public boolean preHandle(
+    HttpServletRequest request, 
+    HttpServletResponse response, 
+    Object handler) throws Exception {
+    // before / filter / decorate / terminate
+    return true;
+  }
+  @Override
+  public void postHandle(
+    HttpServletRequest request,
+    HttpServletResponse response, 
+    Object handler, 
+    ModelAndView modelAndView) throws Exception {
+      // after
+  }
+}
+```
+
+#### Symfony
+#### Tornado
+#### Vert.x
 ``` java
 // Vert.x
 Route route = router.route("/path/");
@@ -433,34 +534,82 @@ route.handler(routingContext -> {
 });
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Parameters
+
+#### AIOHTTP
+``` python
+# AIOHTTP
+def example_middleware_factory(role):
+  @middleware
+  async def example_middleware(request, handler):
+    # check role
+    return await handler(request)
+return sample_middleware
+
+app = web.Application(middlewares=[example_middleware_factory('admin')])
+```
+
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 [Authorize(Roles = "Admin")]
 public class ProductController : ControllerBase { }
 ```
 
+#### CakePHP
 ``` php
-// Laravel
-class AuthorizeMiddleware
+// CakePHP
+public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
 {
-    public function handle($request, Closure $next, $role)
-    {
-        // ...
-    }
+    $middlewareQueue->add(new AuthorizationMiddleware('admin'));
 }
-
-Route::put('...', function ($id) {
-    //
-})->middleware('AuthorizeMiddleware:admin');
 ```
 
-
-``` python
-# FastAPI
-app.add_middleware(AuthorizationMiddleware, role="admin")
-```
-
+#### Express
 ``` js
 // Express
 var authorizationMiddleware = function(role){
@@ -478,16 +627,75 @@ var authorizationMiddleware = function(role){
 app.use(authorizationMiddleware('admin'))
 ```
 
+#### Falcon
+``` python
+# Falcon
+def example_hook(req, resp, resource, params, role):
+  # ...
+
+@falcon.before(example_hook, ['admin'])
+def on_post(self, req, resp):
+  # 
+```
+
+#### FastAPI
+``` python
+# FastAPI
+app.add_middleware(AuthorizationMiddleware, role="admin")
+```
+
+#### Laravel
 ``` php
-// CakePHP
-public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
+// Laravel
+class AuthorizeMiddleware
 {
-    $middlewareQueue->add(new AuthorizationMiddleware('admin'));
+    public function handle($request, Closure $next, $role)
+    {
+        // ...
+    }
+}
+
+Route::put('...', function ($id) {
+    //
+})->middleware('AuthorizeMiddleware:admin');
+```
+
+
+
+
+
+## Conventions
+Applying middleware to some subset of routes using convention
+- globally
+- prefix
+- per action
+
+
+#### ASP.NET Core
+``` csharp
+// ASP.NET Core
+[ExampleFilter] // apply to all sub classes
+public abstract class ExampleControllerBase : ControllerBase {}
+
+[ExampleFilter] // apply to all actions
+public class ExampleController : ControllerBase 
+{ 
+  [ExampleFilter] // apply to single action
+  [HttpGet("")]
+  public IActionResult SomeAction() {}
 }
 ```
 
-## Conventions
+``` csharp
+// ASP.NET Core
+// apply globally
+services.AddControllers(options =>
+{
+    options.Filters.Add(typeof(ExampleFilter));
+});
+```
 
+#### Laravel
 ``` php
 // Laravel
 protected $middlewareGroups = [
@@ -503,6 +711,7 @@ Route::group(['middleware' => ['public']], function () {
 });
 ```
 
+#### Slim
 ``` php
 // Slim
 
@@ -517,6 +726,20 @@ $app->group('/api', function (RouteCollectorProxy $group) {
 
 ## Order
 
+#### AIOHTTP
+``` python
+# AIOHTTP
+app = web.Application(middlewares=[middleware1, middleware2])
+```
+
+#### ASP.NET Core
+``` csharp
+// ASP.NET Core
+[ExampleFilter(Order = 0)]
+public class ExampleController : ControllerBase {}
+```
+
+#### CakePHP
 ``` php
 // CakePHP
 $middleware = new \App\Middleware\ExampleMiddleware;
@@ -564,6 +787,42 @@ updateProduct(@fromBody()product: ProductModel) {
   // based on Accept header
   return updatedProduct
 }
+```
+
+#### ASP.NET Core
+JSON is supported out of the box
+
+``` csharp
+// ASP.NET Core
+// Add XML support
+services.AddControllers()
+  .AddXmlSerializerFormatters();
+```
+
+Custom formats
+``` csharp
+public class CsvOutputFormatter : TextOutputFormatter
+{
+    public CsvOutputFormatter()
+    {
+        SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("text/csv"));
+        SupportedEncodings.Add(Encoding.UTF8);
+        SupportedEncodings.Add(Encoding.Unicode);
+    }
+
+    public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
+    {
+        var body = /* context.Object as csv string */
+
+        await httpContext.Response.WriteAsync(body);
+    }
+}
+
+services.AddControllers(options =>
+{
+    //options.InputFormatters.Insert(0, new ExampleInputFormatter());
+    options.OutputFormatters.Insert(0, new CsvOutputFormatter());
+});
 ```
 
 ## Exception handling

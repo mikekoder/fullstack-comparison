@@ -84,7 +84,7 @@ $routes->get(
 $routes->get('products/(\d+)', 'Products::details/$1');
 ```
 
-#### Django / Django REST Framework
+#### Django / Django REST framework
 ``` python
 # Django REST Framework
 @api_view(['GET'])
@@ -102,7 +102,7 @@ urlpatterns = [
 ]
 ```
 
-#### DropWizard
+#### Dropwizard
 ``` java
 // DropWizard
 @Path("/products")
@@ -156,7 +156,7 @@ async def get_file(path: str):
     # ...
 ```
 
-#### Feathers.js
+#### Feathers
 
 #### Flask
 ``` python
@@ -429,6 +429,7 @@ E.g. all endpoints start with "/api/*"
 /products/{id} -> /api/products/{id}
 ```
 
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 [Route("api/[controller]")]
@@ -441,12 +442,22 @@ public class ProductsController : CustomBaseController
     // all endpoints have route /api/products/...
 }
 ```
-``` ts
-// NestJS
-const app = await NestFactory.create(AppModule);
-app.setGlobalPrefix('api');
+
+#### CakePHP
+``` php
+// CakePHP
+$routes->prefix('api', function (RouteBuilder $routes) {
+    $routes->get(/* ... */)
+});
 ```
 
+#### Express
+``` js
+// Express
+app.use('/api', router);
+```
+
+#### Laravel
 ```php
 // Laravel
 Route::prefix('api')->group(function () {
@@ -455,32 +466,15 @@ Route::prefix('api')->group(function () {
     });
 });
 ```
- 
-``` java
-// Spring Boot
 
-@RestController
-@RequestMapping(path = "${prefix}/products")
-public class ProductsController {
-  // ...
-}
-
-// application.properties
-prefix=/api
+#### NestJS
+``` ts
+// NestJS
+const app = await NestFactory.create(AppModule);
+app.setGlobalPrefix('api');
 ```
 
-``` js
-// Express
-app.use('/api', router);
-```
-
-``` php
-// CakePHP
-$routes->prefix('api', function (RouteBuilder $routes) {
-    $routes->get(/* ... */)
-});
-```
-
+#### ServiceStack
 ``` csharp
 // ServiceStack
 public class AppHost : AppHostBase
@@ -495,13 +489,27 @@ public class AppHost : AppHostBase
 }
 ```
 
+#### Spring (Boot)
+``` java
+// Spring Boot
+
+@RestController
+@RequestMapping(path = "${prefix}/products")
+public class ProductsController {
+  // ...
+}
+
+// application.properties
+prefix=/api
+```
+
+#### Symfony
 ``` php
 // Symfony
 $routes->import('../api/Controller/', 'annotation')
   ->prefix('/api')
 ;
 ```
-
 
 ### Reverse routing
 Reverse routing is creating an URL based on route and its parameters
@@ -515,7 +523,7 @@ Route definition
 url = router.url('user-details', { id: 123} )
 ```
 
-
+#### ASP.NET Core
 ```csharp
 // ASP.NET Core
 [HttpGet("{id}", Name = "product-details")]
@@ -528,16 +536,7 @@ public IActionResult GetSingle(int id)
 Url.Link("product-details", new { id = 123 });
 ```
 
-``` php
-// Laravel
-Route::get('products/{id}', function () {
-    //
-})->name('product-details');
-
-// generating url by route
-$url = route('product-details', ['id' => 123]);
-```
-
+#### CakePHP
 ``` php
 // CakePHP
 $routes->get(
@@ -552,6 +551,18 @@ Router::pathUrl('Products::details', [123]);
 Router::url(['_name' => 'product-details', 'id' => 123]);
 ``` 
 
+#### Laravel
+``` php
+// Laravel
+Route::get('products/{id}', function () {
+    //
+})->name('product-details');
+
+// generating url by route
+$url = route('product-details', ['id' => 123]);
+```
+
+#### ServiceStack
 ``` csharp
 // ServiceStack
 [Route("/products/{Id}", "GET")]
@@ -564,23 +575,19 @@ var relativeUrl = new GetProduct { Id = 123 }.ToGetUrl();
 var absoluteUrl = new GetProduct { Id = 123 }.ToAbsoluteUri();
 ```
 
+
 ### Subdomain
 - Multitenancy ```{client}.example.com/products```
 - Api versioning ```apiv1.example.com/products``` 
 
-
-``` ts
-// NestJS
-@Controller({ host: ':client.example.com' })
-export class ProductsController {
-  @Get()
-  getProducts(@HostParam('client') client: string) {
-    // ...
-  }
-}
-
+#### CodeIgniter
+``` php
+// CodeIgniter
+$routes->add('products', 'Products::list_client1', ['subdomain' => 'client1']);
+$routes->add('products', 'Products::list_client2', ['subdomain' => 'client2']);
 ```
 
+#### Laravel
 ``` php
 // Laravel
 Route::domain('{client}.example.com')->group(function () {
@@ -590,17 +597,24 @@ Route::domain('{client}.example.com')->group(function () {
 });
 ```
 
+#### NestJS
+``` ts
+// NestJS
+@Controller({ host: ':client.example.com' })
+export class ProductsController {
+  @Get()
+  getProducts(@HostParam('client') client: string) {
+    // ...
+  }
+}
+```
+
+#### Symfony
 ``` php
 // Symfony
 $routes->add('product-list', '/products')
     ->controller([ProductsController::class, 'list'])
     ->host('{client}.example.com');
-```
-
-``` php
-// CodeIgniter
-$routes->add('products', 'Products::list_client1', ['subdomain' => 'client1']);
-$routes->add('products', 'Products::list_client2', ['subdomain' => 'client2']);
 ```
 
 ### Versioning
@@ -636,15 +650,7 @@ products -> 2.0
 users    -> 1.1
 ```
 
-
-``` ts
-// Restify
-server.get('/products/:id', restify.plugins.conditionalHandler([
-  { version: '1.1.0', handler: getProductByIdV1 },
-  { version: '2.0.0', handler: getProductByIdV2 }
-]));
-```
-
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 // Nuget: Microsoft.AspNetCore.Mvc.Versioning
@@ -679,13 +685,19 @@ public class ProductsController : ControllerBase
 }
 ```
 
-
-
-
+#### restify
+``` ts
+// Restify
+server.get('/products/:id', restify.plugins.conditionalHandler([
+  { version: '1.1.0', handler: getProductByIdV1 },
+  { version: '2.0.0', handler: getProductByIdV2 }
+]));
+```
 
 
 ### Static files
 
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 app.UseStaticFiles(new StaticFileOptions
@@ -695,6 +707,22 @@ app.UseStaticFiles(new StaticFileOptions
 });
 ```
 
+#### Express
+``` js
+// Express
+app.use('/assets', express.static('path/to/files'))
+```
+
+
+#### FastAPI
+``` python
+# FastAPI
+app.mount("/assets", StaticFiles(directory="path/to/files"), name="assets")
+```
+
+
+
+#### NestJS
 ``` ts
 // NestJS
 @Module({
@@ -708,18 +736,13 @@ app.UseStaticFiles(new StaticFileOptions
 export class AppModule {}
 ```
 
-``` python
-# FastAPI
-app.mount("/assets", StaticFiles(directory="path/to/files"), name="assets")
-```
 
-``` js
-// Express
-app.use('/assets', express.static('path/to/files'))
-```
+
+
 
 ### Rate limiting
 
+#### Laravel
 ``` php
 // Laravel
 RateLimiter::for('global', function (Request $request) {
@@ -733,6 +756,8 @@ Route::middleware(['throttle:global'])->group(function () {
 ```
 
 ### Redirect
+
+#### Laravel
 ``` php
 // Laravel
 Route::redirect('/old', '/new');
@@ -744,6 +769,7 @@ Route::redirect('/old', '/new');
 If a client application is hosted by the same server as the api, server needs to handle client side routing.  
 E.g. all api endpoints are behind */api/...* then all client side routes must point to the same *index.html* file.
 
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 app.UseEndpoints(endpoints =>
@@ -752,6 +778,7 @@ app.UseEndpoints(endpoints =>
 });
 ```
 
+#### Laravel
 ``` php
 // Laravel
 Route::fallback(function () {
@@ -759,6 +786,7 @@ Route::fallback(function () {
 });
 ```
 
+#### ServiceStack
 ``` csharp
 // ServiceStack
 [FallbackRoute("/{Path}")]
