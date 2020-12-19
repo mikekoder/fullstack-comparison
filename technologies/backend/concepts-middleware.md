@@ -57,7 +57,14 @@ app.add_middleware(
 app.enableCors(/* configuration */);
 ```
 
-
+#### ServiceStack
+``` csharp
+// ServiceStack
+Plugins.Add(new CorsFeature(
+  allowOriginWhitelist: new[] { "http://localhost" /* , ... */ },
+  /* other configuration */
+));
+```
 
 ## Before / after / filter / decorate / terminate
 
@@ -481,6 +488,25 @@ module.exports.http = {
 ```
 
 #### ServiceStack
+``` csharp
+// ServiceStack
+public class ExampleRequestFilterAttribute : RequestFilterAsyncAttribute 
+{
+    public override async Task ExecuteAsync(IRequest req, IResponse res, object requestDto) 
+    {
+        // before / filter / decorate / terminate 
+    }
+}
+
+public class ExampleResponseFilterAttribute : ResponseFilterAsyncAttribute
+{
+    public override async Task ExecuteAsync(IRequest req, IResponse res, object responseDto) 
+    {
+        // after
+    }
+}
+```
+
 #### Slim
 ``` php
 // Slim
@@ -533,50 +559,6 @@ route.handler(routingContext -> {
   // main handler
 });
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Parameters
 
@@ -663,6 +645,11 @@ Route::put('...', function ($id) {
 
 
 
+#### Slim
+``` php
+// Slim
+$app->add(new AuthorizeMiddleware('admin'));
+```
 
 ## Conventions
 Applying middleware to some subset of routes using convention
@@ -709,6 +696,43 @@ protected $middlewareGroups = [
 Route::group(['middleware' => ['public']], function () {
     // route definitions
 });
+```
+
+#### ServiceStack
+``` csharp
+// ServiceStack
+this.GlobalRequestFilters.Add((req, res, requestDto) => 
+{
+  // ...
+});
+this.GlobalResponseFilters.Add((req, res, responseDto) => 
+{
+  // ...
+});
+
+[Route("/example")]
+[ExampleRequestFilter]
+public class ExampleRequest
+{
+  // ...
+}
+
+[ExampleResponseFilter]
+public class ExampleResponse : IHasResponseStatus
+{
+  // ...
+}
+
+
+[ExampleRequestFilter]
+[ExampleResponseFilter]
+public class ExampleService : Service
+{
+    public object Get(ExampleRequest request)
+    {
+        // ...
+    }
+}
 ```
 
 #### Slim
@@ -827,3 +851,12 @@ services.AddControllers(options =>
 
 ## Exception handling
 - Prevent sending sensitive system information
+
+#### ASP.NET Core
+``` csharp
+// ASP.NET Core
+if (env.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+```

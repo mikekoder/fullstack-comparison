@@ -27,7 +27,23 @@ app.add_routes([
 ```
 
 #### Akka HTTP
+``` java
+// Akka HTTP
+private Route createRoute() {
 
+    return concat(
+      get(() ->
+        pathPrefix("products", () ->
+          path(longSegment(), (Long id) -> {
+            // ...
+          }))),
+      post(() ->
+        path("products", () ->
+          // ...
+        ))
+    );
+}
+```
 
 #### ASP.NET Core
 ``` csharp
@@ -98,7 +114,7 @@ def update_product(request, id):
 urlpatterns = [
     path('products/', views.product_list),
     path('products/<int:id>', views.update_product),
-    # ...
+    re_path(r'^files/(?P<path>.*)$', views.get_file)
 ]
 ```
 
@@ -393,6 +409,19 @@ return function (RoutingConfigurator $routes) {
 ```
 
 #### Tornado
+``` python
+# Tornado
+class ProductsHandler(tornado.web.RequestHandler):
+    def get(self, id):
+        # ...
+    def put(self, id):
+        # ...
+
+application = tornado.web.Application([
+    (r"/products/(?P<id>\d+)", ProductsHandler)
+])
+```
+
 #### Vert.x
 ``` java
 // Vert.x
@@ -427,6 +456,18 @@ Multiple routes can have a common prefix.
 E.g. all endpoints start with "/api/*"  
 ```
 /products/{id} -> /api/products/{id}
+```
+#### Akka HTTP
+``` java
+// Akka HTTP
+private Route createRoute() {
+  return concat(
+    get(() ->
+      pathPrefix("api", () ->
+        // ...
+      ))
+  );
+}
 ```
 
 #### ASP.NET Core
@@ -472,6 +513,19 @@ Route::prefix('api')->group(function () {
 // NestJS
 const app = await NestFactory.create(AppModule);
 app.setGlobalPrefix('api');
+```
+
+#### Quarkus
+``` java
+// Quarkus
+@RouteBase(path = "api")  
+public class ApiRoutes {
+
+    @Route(path = "products")
+    void getProducts(RoutingContext rc) {
+        // ...
+    }
+}
 ```
 
 #### ServiceStack
@@ -551,6 +605,35 @@ Router::pathUrl('Products::details', [123]);
 Router::url(['_name' => 'product-details', 'id' => 123]);
 ``` 
 
+#### Django / Django REST framework
+``` python
+# Django
+urlpatterns = [
+    path('products/<int:id>/', views.product_deails, name='product-details'),
+]
+
+id = 123
+url = reverse('product-details', args=(id,)
+```
+
+#### FastAPI
+https://stackoverflow.com/questions/63682956/fastapi-retrieve-url-from-view-name-route-name
+
+``` python
+# FastAPI
+@app.get('/products/{id}/')
+def get_product(id: int):
+  # ...
+
+app.url_path_for('get_product', **{"id": 123})
+```
+
+#### Flask
+``` python
+# Flask
+url_for('product_details', id=123)
+```
+
 #### Laravel
 ``` php
 // Laravel
@@ -561,6 +644,10 @@ Route::get('products/{id}', function () {
 // generating url by route
 $url = route('product-details', ['id' => 123]);
 ```
+
+
+#### NestJS
+https://github.com/vh13294/nestjs-url-generator
 
 #### ServiceStack
 ``` csharp
@@ -575,10 +662,34 @@ var relativeUrl = new GetProduct { Id = 123 }.ToGetUrl();
 var absoluteUrl = new GetProduct { Id = 123 }.ToAbsoluteUri();
 ```
 
+#### Spring (Boot)
+``` java
+// Spring
+UriComponents uriComponents = MvcUriComponentsBuilder
+    .fromMethodName(ProductController.class, "getProduct", 123);
+
+URI uri = uriComponents.encode().toUri();
+```
+
+
+#### Symfony
+``` php
+// Symfony
+$routes->add('product_details', '/products/{id<\d+>}')
+  ->controller([ProductController::class, 'get_details'])
+  ->methods(['GET']);
+
+$pageDetailsUrl = $this->router->generate('product_details', [
+    'id' => 123
+]);
+```
 
 ### Subdomain
 - Multitenancy ```{client}.example.com/products```
 - Api versioning ```apiv1.example.com/products``` 
+
+#### ASP.NET Core
+https://github.com/mariuszkerl/AspNetCoreSubdomain
 
 #### CodeIgniter
 ``` php
@@ -721,6 +832,39 @@ app.mount("/assets", StaticFiles(directory="path/to/files"), name="assets")
 ```
 
 
+#### Flask
+``` python
+# Flask
+@app.route('/assets/<path:path>')
+def send_file(path):
+  return send_from_directory('path/to/files', path)
+```
+
+#### hapi
+``` cmd
+npm install @hapi/inert
+```
+
+``` js
+// hapi
+const server = Hapi.server({
+  routes: {
+    files: {
+      relativeTo: Path.join(__dirname, 'path/to/files')
+    }
+  }
+});
+
+await server.register(require('@hapi/inert'));
+
+server.route({
+  method: 'GET',
+  path: '/assets/{path*}',
+  handler: function (request, h) {
+    return h.file(request.params.path);
+  }
+});
+```
 
 #### NestJS
 ``` ts
@@ -739,8 +883,55 @@ export class AppModule {}
 
 
 
+#### Quarkus
+https://quarkus.io/guides/http-reference#serving-static-resources
 
 ### Rate limiting
+
+#### CodeIgniter
+``` php
+// CodeIgniter
+
+class Throttle implements FilterInterface
+{
+    public function before(RequestInterface $request, $arguments = null)
+    {
+        $throttler = Services::throttler();
+
+        if ($throttler->check($request->getIPAddress(), 60, MINUTE) === false)
+        {
+            return Services::response()->setStatusCode(429);
+        }
+    }
+
+    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
+    {
+    }
+}
+```
+
+#### Django REST framework
+``` python
+# Django REST framework
+
+# Global limit
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/hour'
+    }
+}
+
+# view specific limit
+@api_view(['GET'])
+@throttle_classes([UserRateThrottle])
+def example_view(request):
+    # ...
+```
 
 #### Laravel
 ``` php

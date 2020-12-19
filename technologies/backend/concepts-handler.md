@@ -30,6 +30,46 @@ public class ExampleController : Controller
 }
 ```
 
+#### NestJS
+``` ts
+// NestJS
+
+@Injectable()
+export class ProductService {
+  findAll(): Product[] {
+    // ...
+  }
+}
+
+export class ProductsController {
+  constructor(private productService: ProductService) {}
+
+}
+
+@Module({
+  controllers: [ProductsController],
+  providers: [ProductService],
+})
+export class AppModule {}
+```
+
+#### ServiceStack
+``` csharp
+public void Configure(Container container)
+{
+    container.AddTransient<IExampleService, ExampleService>();
+    container.AddSingleton<AnotherService>();
+}
+
+public class ExampleService : Service
+{
+    public ExampleService(IExampleService service)
+    {
+        // ...
+    }
+}
+```
+
 ## Model binding
 Model binding is the process of reading values from HTTP request and converting them to given type.
 
