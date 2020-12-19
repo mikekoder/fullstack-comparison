@@ -15,6 +15,8 @@ Logging in with 3rd party accounts (e.g. Google or Facebook) is a common scenari
 ## JWT
 
 ## Roles
+
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 [Authorize(Roles = "Admin")]
@@ -23,6 +25,7 @@ public class ProductController : ControllerBase { }
 
 ## Policies
 
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 services.AddAuthorization(options =>

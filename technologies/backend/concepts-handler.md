@@ -10,6 +10,7 @@ H8 - Cache dependencies: Cached values can be cleared by some convention (e.g. r
 
 ## Dependency injection
 
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 services.AddTransient<IExampleService, ExampleService>();
@@ -82,6 +83,7 @@ getOrders(startDate: Date, endDate: Date) {
 }
 ```
 
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 [HttpPut("{id}")]
@@ -91,7 +93,15 @@ public void UpdateProduct(int id, [FromBody] ProductModel product)
 }
 ```
 
+#### FastAPI
+``` python
+# FastAPI
+@app.put("/products/{id}")
+async def update_product(id: int, product: ProductModel):
+    # ...
+```
 
+#### NestJS
 ```ts
 // NestJS
 @Put(':id')
@@ -100,6 +110,7 @@ updateProduct(@Param('id') id: string, @Body() product: ProductModel) {
 }
 ```
 
+#### Spring
 ``` java
 // Spring
 @PutMapping("/products/{id}")
@@ -108,15 +119,9 @@ public void updateProduct(@PathVariable Long id, @RequestBody ProductModel produ
 }
 ```
 
-``` python
-# FastAPI
-@app.put("/products/{id}")
-async def update_product(id: int, product: ProductModel):
-    # ...
-```
-
 ## Validation
 
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 public class ProductModel
@@ -139,6 +144,7 @@ public class ValidateModelFilter : ActionFilterAttribute
 }
 ```
 
+#### NestJS
 ``` ts
 // NestJS
 
@@ -155,6 +161,8 @@ app.useGlobalPipes(new ValidationPipe());
 ## Cache
 
 ### Cache response
+
+#### ASP.NET Core
 ``` csharp
 // ASP.NET Core
 public class NewsController : Controller
@@ -168,6 +176,7 @@ public class NewsController : Controller
 }
 ```
 
+#### NestJS
 ``` ts
 // NestJS
 @Controller()
