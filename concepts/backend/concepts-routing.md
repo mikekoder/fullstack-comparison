@@ -130,7 +130,7 @@ public class ProductResource {
     }
 
     @GET
-    @Path("files/{path:.+")
+    @Path("files/{path:.+}")
     public String getProduct(@PathParam("path") String path) {
         // ...
     }
@@ -613,7 +613,7 @@ urlpatterns = [
 ]
 
 id = 123
-url = reverse('product-details', args=(id,)
+url = reverse('product-details', args=(id))
 ```
 
 #### FastAPI

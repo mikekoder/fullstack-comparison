@@ -12,14 +12,30 @@ M10 - Content negotiation: Can parse request payload and serialize response bodi
 M11 - Error handling: Can prevent sending sensitive exception messages on error
 
 ```
+handler1 = (req, next) => {
+  log('handler 1 before')
+  response = next()
+  log('handler 1 after')
+  return response
+}
+
+handler2 = (req, next) => {
+  log('handler 2 before')
+  response = next()
+  log('handler 2 after')
+  return response
+}
+```
+
+```
 app.middleware(handler1)
 app.middleware(handler2)
 ```
 ```
-handler1 start
-  handler2 start
-  handler2 end
-handler1 end
+handler1 before
+  handler2 before
+  handler2 after
+handler1 after
 ```
 
 ```
