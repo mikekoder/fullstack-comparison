@@ -31,7 +31,7 @@ ng build example-app
 
 Create project
 ``` bash
-npx create-react-app example-app
+npx create-react-app example-app --template typescript
 ```
 
 Start development server
@@ -103,3 +103,5 @@ Start development server
 ``` bash
 quasar dev
 ```
+
+## IDE extensions

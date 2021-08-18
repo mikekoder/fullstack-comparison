@@ -143,6 +143,9 @@ public class ProductResource {
 app.get('/products/:id(\\d+)', function (req, res) {
   // ...
 })
+app.get('/files/:path(\\.+)', function (req, res) {
+  // ...
+})
 ```
 
 #### Falcon
@@ -300,6 +303,16 @@ public class ProductResource {
     @Path("{id}")
     public Response update(@PathParam("id") Long id, Product product) {
       // ...
+    }
+
+    @Route(methods = HttpMethod.GET, regex = "/files/.+")
+    public Response getFile(RoutingContext rc) {
+        // ...
+    }
+
+    @Route(methods = HttpMethod.GET, regex = "\\d+")
+    public Response getById(RoutingContext rc) {
+        // ...
     }
 }
 ```
@@ -587,7 +600,8 @@ public IActionResult GetSingle(int id)
 }
 
 // generate url
-Url.Link("product-details", new { id = 123 });
+// ASP.NET Core
+var url = Url.Link("product-details", new { id = 123 });
 ```
 
 #### CakePHP
@@ -616,6 +630,11 @@ id = 123
 url = reverse('product-details', args=(id))
 ```
 
+#### Dropwizard
+``` java
+UriBuilder.fromResource(ProductResource.class).build(product.getId());
+```
+
 #### FastAPI
 https://stackoverflow.com/questions/63682956/fastapi-retrieve-url-from-view-name-route-name
 
@@ -642,6 +661,7 @@ Route::get('products/{id}', function () {
 })->name('product-details');
 
 // generating url by route
+// Laravel
 $url = route('product-details', ['id' => 123]);
 ```
 
@@ -966,6 +986,13 @@ E.g. all api endpoints are behind */api/...* then all client side routes must po
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapFallbackToFile("/index.html");
+});
+```
+
+#### Express
+``` js
+app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '..', 'index.html'));
 });
 ```
 

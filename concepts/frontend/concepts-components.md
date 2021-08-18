@@ -1,3 +1,107 @@
+# Component
+
+## Angular
+Components are split to template (.html), code (.ts) and style (.scss) files.
+Template is html with special Angular markup
+``` html
+<div>Markup</div>
+```
+Script exports component class.
+@Component decorator is used to configure tag name and template and style files.
+```
+import { Component, Input, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'example',
+  templateUrl: './example.component.html',
+  styleUrls: ['./example.component.scss']
+})
+export class ExampleComponent implements OnInit {
+  // state, methods etc.
+  ngOnInit(): void { }
+}
+```
+
+## Blazor
+Components are in .razor files which contains template, code and possibly some attributes like route
+```
+@page "/"
+
+<div>Markup</div>
+
+@code {
+  // state, methods etc.
+}
+``` 
+
+## React
+Components are in .tsx files
+``` ts
+import React, { useState } from 'react';
+
+function Example() {
+  // state, functions etc.
+  
+  return (
+    <div>
+      Markup
+    </div>
+  );
+}
+
+export default App;
+```
+
+## Vue
+Components can be in single .vue files which has three parts: template, script, style.  
+Any of those parts can also be separated to distinct files (.html, .ts, .scss).
+
+### Class API
+```
+<template>
+  Markup
+</template>
+
+<script lang="ts">
+import { Options, Vue } from 'vue-class-component';
+
+export default class Test extends Vue {
+  // state, methods etc.
+}
+</script>
+<style lang="scss>
+// styles
+</style>
+```
+### Composition API
+```
+<template>
+  Markup
+</template>
+
+<script lang="ts">
+export default {
+  setup(){
+    // state etc.
+  }
+}
+</script>
+<style lang="scss>
+// styles
+</style>
+```
+
+### Many files
+```
+<template src="example.html">
+</template>
+<script src="example.ts">
+</script>
+<style src="example.scss">
+</style>
+```
+
+
 # State
 
 ## Angular
@@ -63,6 +167,12 @@ get fullName(): string {
 }
 ```
 
+## Blazor
+Just C# getters
+``` csharp
+public string FullName => $"{FirstName} {LastName}";
+```
+
 ## React
 ``` ts
 const name = useMemo(() => (firstName, lastName) => `${firstName} ${lastName}`, [firstName, lastName]);
@@ -117,8 +227,10 @@ ngOnChanges(changes: SimpleChanges) {
 categoryChanged(newValue, oldValue) {
   this.loadProducts();
 }
-
 ```
+
+## Blazor
+
 
 ## React
 ``` ts
@@ -282,6 +394,29 @@ constructor(private bus: EventAggregator) {
   });
 }
 ```
+
+## Blazor
+Define callback
+``` csharp
+[Parameter]
+public EventCallback<int> OnValueChanged { get; set; }
+```
+Invoke callback
+``` csharp
+await OnValueChanged.InvokeAsync(123)
+```
+Listen events
+``` csharp
+<MyComponent OnValueChanged="@HandleChange" />
+
+@code {
+  private void HandleChange(int i)
+  {
+      //...
+  }
+}
+```
+
 ## React
 
 Props include callback function
@@ -354,6 +489,26 @@ Bind handler to event
 ## Vue hooks
 
 # Passing data deep down
+
+## Angular
+Not available
+
+## Blazor
+Define cascading value
+```
+<CascadingValue Value="@ExampleValue" Name="someData">
+  @Body
+</CascadingValue>
+```
+
+Read cascading value
+``` csharp
+@code {
+    [CascadingParameter(Name = "someData")]
+    protected ExampleType ExampleParameter { get; set; }
+}
+```
+
 
 ## React
 Define context
@@ -454,6 +609,37 @@ ng-content is replaced with elements mathing those selectors
   </div>
 </LayoutComponent>
 ```
+
+## Blazor
+Catch & render
+``` html
+<div class="menu">
+  @Sidebar
+</div>
+<div class="main">
+  @Content
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment Sidebar { get; set; }
+
+    [Parameter]
+    public RenderFragment Content { get; set; }
+}
+```
+Pass values by using parameter names as tag names
+``` html
+<ExampleComponent>
+    <Sidebar>
+      Sidebar content
+    </Sidebar>
+    <Content>
+      Main content
+    </Content>
+</TableTemplate>
+```
+
 
 ## React
 Render props.children where inner content should go
@@ -624,6 +810,26 @@ unbind() {
 }
 ```
 
+## Blazor
+``` csharp
+protected override void OnInitialized()
+{
+  // initial parameters are set
+}
+protected override void OnParametersSet()
+{
+  // react to changes
+}
+protected override void OnAfterRender(bool firstRender)
+{
+  // dom is ready
+}
+public void Dispose()
+{
+  // component is disposed
+}
+```
+
 ## React class api
 ``` ts
 componentDidMount() {
@@ -673,10 +879,19 @@ Define selector to element
 <canvas #myRef></canvas>
 ```
 
-
 ``` ts
  @ViewChild('myRef') canvas: ElementRef;
  ```
+
+## Blazor
+```
+<MyComponent @ref="myRef" />
+
+@code {
+    private MyComponent myRef;
+}
+```
+
 
 ## React
 Create ref

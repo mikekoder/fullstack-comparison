@@ -14,6 +14,17 @@ Or in the code
 const simple = $localize`:@@simple_key:Default text`;
 ```
 
+## Blazor
+``` html
+@inject Microsoft.Extensions.Localization.IStringLocalizer<MyComponent> Loc
+<!-- simple -->
+<span>@Loc["Simple"]</span>
+<!-- formatted -->
+<span>@String.Format(Loc["Interpolation with first name {0} and last name{1}"].Value, Model.FirstName, Model.LastName)</span>
+<!-- plural -->
+<span>@(count == 1 ? Loc["Singular"] : Loc["Plural"])</span>
+```
+
 ## React
 https://react.i18next.com/
 

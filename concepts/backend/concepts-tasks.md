@@ -30,6 +30,19 @@ public class TimedHostedService : IHostedService, IDisposable
 }
 ```
 
+#### Laravel
+``` php
+class Kernel extends ConsoleKernel
+{
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->call(function () {
+            // ...
+        })->cron('* */5 * * *');
+    }
+}
+```
+
 #### NestJS
 ``` ts
 // NestJS
@@ -40,5 +53,19 @@ export class TasksService {
   handleCron() {
     // ...
   }
+}
+```
+
+#### Spring / Spring Boot
+
+``` java
+@Scheduled(fixedDelay = 1000)
+public void handleFixedDelayTask() {
+    // ...
+}
+
+@Scheduled(cron = "0 */5 * * * *")
+public void handleCronTask() {
+    // ...
 }
 ```

@@ -293,6 +293,11 @@ Check validility
 <img src.bind="product.imageUrl" />
 ```
 
+## Blazor
+``` html
+<img src="@product.imageUrl" />
+```
+
 ## React
 ``` xml
 <img src={product.imageUrl} />
@@ -320,6 +325,12 @@ Check validility
 ``` html
 <div class.bind="{ active: selected === 'first' }"></div>
 <div class.bind="{ active: selected === 'second' }"></div>
+```
+
+## Blazor
+``` html
+<div class="@(selected === "first" ? "active" : "" )"></div>
+<div class="@(selected === "second" ? "active" : "" )"></div>
 ```
 
 ## React
@@ -377,6 +388,10 @@ Check validility
 
 # Scoped styles
 ## Angular
+
+## Blazor
+Just add Component.razor.css file next to Component.razor
+
 ## React
 ## Vue
 

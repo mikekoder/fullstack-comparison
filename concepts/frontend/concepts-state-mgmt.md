@@ -36,6 +36,58 @@ save(): void {
 }
 
 ```
+
+## Blazor
+Libraries like [Blazor-State](https://github.com/TimeWarpEngineering/blazor-state)
+
+
+Create service
+``` csharp
+public class ProfileService
+{
+  public event Action OnChange;
+
+  private Profile _profile;
+  public Profile Profile
+  {
+    get => profile;
+    set 
+    {
+      _profile = value;
+      OnChange?.Invoke();
+    }
+  }
+}
+```
+Register service
+``` csharp
+builder.Services.AddSingleton<ProfileService>();
+```
+Use service
+``` csharp
+@implements IDisposable
+@inject ProfileService ProfileService
+
+<span>@ProfileService.Profile.Email</span>
+
+@code {
+    protected override void OnInitialized()
+    {
+        ProfileService.OnChange += StateHasChanged;
+    }
+    private void UpdateProfile()
+    {
+        var profile = new Profile{ /* ... */ };
+        ProfileService.Profile = profile;
+    }
+
+    public void Dispose()
+    {
+        ProfileService.OnChange -= StateHasChanged;
+    }
+}
+```
+
 ## React (redux)
 
 Define actions

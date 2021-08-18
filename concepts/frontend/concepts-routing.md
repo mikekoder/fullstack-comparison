@@ -2,6 +2,7 @@
 ## Angular
 Defining routes
 ``` ts
+// Angular
 const routes: Routes = [
   { path: 'products/:id', component: ProductDetails },
   // ...
@@ -9,6 +10,7 @@ const routes: Routes = [
 ```
 Reading route parameters
 ``` ts
+// Angular
 const id = this.route.snapshot.paramMap.get('id');
 ```
 Generating link
@@ -17,6 +19,7 @@ Generating link
 ```
 Navigating
 ``` ts
+// Angular
 this.router.navigate(['/products', { id: 123 }]);
 ```
 
@@ -38,6 +41,31 @@ activate(params, routeConfig) {
 Navigating
 ``` ts
 this.router.navigateToRoute('product-details', { id: 123});
+```
+
+
+
+
+## Blazor
+Defining route
+``` csharp
+// Blazor
+@page "/products/{id}"
+```
+Reading parameters (case insensitive)
+``` csharp
+@code {
+  [Parameter]
+  public int Id { get; set; }
+}
+```
+Generating link
+``` csharp
+<NavLink class="nav-link" href=@("products/" + product.Id)>Product details</NavLink>
+```
+Navigating
+``` csharp
+NavigationManager.NavigateTo("products/" + product.Id);
 ```
 
 
@@ -176,6 +204,7 @@ Not available
 ## svelte-router
 Routes can have meta
 ``` ts
+// Svelte
 routes: [
   { 
     path: 'bugs',
@@ -250,6 +279,12 @@ step.run = (navigationInstruction: NavigationInstruction, next: Next): Promise<a
   return next();
 };
 config.addPreActivateStep(step);
+```
+
+## Blazor
+Guards are located in components
+```
+@attribute [Authorize(Policy = "MyPolicy")]
 ```
 
 ## react-router-dom
@@ -487,6 +522,22 @@ const routes: Routes = [
 { route: '*path', name: 'not-found', moduleId: 'notfound/index' }
 ```
 
+## Blazor
+``` csharp
+@page "/{*path}"
+```
+Not found
+```
+<Router AppAssembly="@typeof(Program).Assembly">
+  <Found Context="routeData">
+    ...
+  </Found>
+  <NotFound>
+    ...
+  </NotFound>
+</Router>
+```
+
 ## react-router-dom
 ``` xml
 <!-- -->
@@ -523,6 +574,9 @@ const routes: Routes = [
 ``` ts
 { route: 'old', redirect: 'new' },
 ```
+
+## Blazor
+Have to put redirect in component
 
 ## react-router-dom
 ``` xml

@@ -58,6 +58,14 @@ services.AddCors(options =>
 app.UseCors();
 ```
 
+#### Express
+``` bash
+npm install cors
+```
+``` js
+app.use(cors())
+```
+
 #### FastAPI
 ``` python
 # FastAPI
@@ -71,6 +79,11 @@ app.add_middleware(
 ``` ts
 // NestJS
 app.enableCors(/* configuration */);
+```
+
+#### Quarkus
+``` plain
+quarkus.http.cors=true
 ```
 
 #### ServiceStack
@@ -280,7 +293,7 @@ app.service('products').hooks({
     create: [ before_handler ],
     update: [ before_handler ]
   },
-  before: {
+  after: {
     create: [ after_handler ],
     update: [ after_handler ]
   }
@@ -680,17 +693,14 @@ Applying middleware to some subset of routes using convention
 [ExampleFilter] // apply to all sub classes
 public abstract class ExampleControllerBase : ControllerBase {}
 
-[ExampleFilter] // apply to all actions
+[ExampleFilter] // apply to all actions in this class
 public class ExampleController : ControllerBase 
 { 
   [ExampleFilter] // apply to single action
   [HttpGet("")]
   public IActionResult SomeAction() {}
 }
-```
 
-``` csharp
-// ASP.NET Core
 // apply globally
 services.AddControllers(options =>
 {
@@ -698,6 +708,28 @@ services.AddControllers(options =>
 });
 ```
 
+#### CakePHP
+``` php
+$routes->prefix('admin', function (RouteBuilder $routes) {
+    $routes->registerMiddleware(
+        'auth',
+        new \Authentication\Middleware\AuthenticationMiddleware($this)
+    );
+    $routes->applyMiddleware('auth');
+
+    // ...
+});
+```
+
+
+#### Express
+``` js
+// Express
+router.use(function (req, res, next) {
+  // ... executed for every route
+  next()
+})
+```
 #### Laravel
 ``` php
 // Laravel
@@ -711,6 +743,27 @@ protected $middlewareGroups = [
 
 Route::group(['middleware' => ['public']], function () {
     // route definitions
+});
+```
+#### NestJS
+Applying for some route
+``` ts
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(MyMiddleware)
+      .exclude(
+        { path: 'products', method: RequestMethod.GET },
+      )
+      .forRoutes('products');
+  }
+}
+```
+#### Restify
+```  js
+server.use(function(req, res, next) {
+    // ... executed for every route
+    return next();
 });
 ```
 
@@ -797,6 +850,18 @@ $middlewareQueue->insertAfter(
 );
 ```
 
+#### ServiceStack
+``` csharp
+public class ExampleService : Service
+{
+    [ExampleFilter(Priority = 1)]
+    public object Get(Request request)
+    {
+        // ...
+    }
+}
+```
+
 ## Content negotiation
 HTTP request headers include *Content-Type* which describes the type of the body and *Accept* which describes the desired type for the response. Usually it's possible to read header values in the handler code and use branching logic to decide which parsers and serializers to use.
 ```
@@ -865,6 +930,64 @@ services.AddControllers(options =>
 });
 ```
 
+#### DropWizard
+``` java
+@Path("/example")
+@Produces(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_XML)
+@Consumes(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_XML)
+public class ExampleResource {
+
+    @GET
+    public ExampleResponse fetch() {
+        return new ExampleResponse();
+    }
+
+    @POST
+    public Response add(ExampleRequest example) {
+        // ...
+    }
+}
+```
+
+#### Quarkus
+``` java
+@Produces("application/xml")
+public class ExampleResource {
+
+    @GET
+    public Example getExample() {...}
+
+    @POST
+    @Consumes("application/xml")
+    public void createExample(ExampleRequest example) {...}
+}
+
+@Provider
+@Produces("application/xml")
+public class ExampleProvider implements MessageBodyWriter<ExampleResponse> {...}
+
+@Provider
+@Consumes("application/xml")
+public class ExampleProvider implements MessageBodyReader<ExampleRequest> {...}
+```
+
+#### Restify
+``` js
+var server = restify.createServer({
+  formatters: {
+    ['application/xml'](req, res, body) {
+      var xml = //...;
+      return xml;
+    }
+  }
+});
+```
+
+#### ServiceStack
+Enabled by default
+
 ## Exception handling
 - Prevent sending sensitive system information
 
@@ -874,5 +997,118 @@ services.AddControllers(options =>
 if (env.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            // ... 
+        });
+    });
+}
+```
+
+#### CakePHP
+``` php
+class ErrorController extends AppController
+{
+    public function beforeRender(Event $event)
+    {
+        // ...
+    }
+}
+```
+
+#### Django
+``` python
+def example_exception_handler(exc, context):
+    # ...
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'my_project.example_exception_handler'
+}
+```
+
+#### Dropwizard
+``` java
+public class CustomExceptionMapper implements ExceptionMapper<RuntimeException> {
+    @Override
+    public Response toResponse(RuntimeException runtime) {
+        // ...
+    }
+}
+
+environment.jersey().register(new CustomExceptionMapper());
+```
+
+#### FastAPI
+``` python
+@app.exception_handler(ExampleException)
+async def example_exception_handler(request: Request, exc: ExampleException):
+    # ...
+```
+
+#### Flask
+``` python
+@app.errorhandler(HTTPException)
+def handle_exception(e):
+    # ...
+```
+
+#### Laravel
+Handler is created automatically
+``` php
+class Handler extends ExceptionHandler
+{
+    public function register()
+    {
+        $this->reportable(function (ExampleException $e) {
+            // ...
+        });
+    }
+}
+```
+
+#### NestJS
+``` ts
+@Catch(HttpException)
+export class HttpExceptionFilter implements ExceptionFilter {
+  catch(exception: HttpException, host: ArgumentsHost) {
+    // ...
+  }
+}
+```
+
+#### ServiceStack
+``` csharp
+public override void Configure(Container container)
+{
+    this.ServiceExceptionHandlers.Add((httpReq, request, exception) => {
+        // ...
+        ...
+        return null; //continue with default Error Handling
+    });
+
+    this.UncaughtExceptionHandlers.Add((req, res, operationName, ex) => {
+        // ...
+    });
+}
+``` 
+
+#### Symfony
+``` php
+class MyCustomProblemNormalizer implements NormalizerInterface
+{
+    public function normalize($exception, string $format = null, array $context = [])
+    {
+        // ...
+    }
+    public function supportsNormalization($data, string $format = null)
+    {
+        // ...
+    }
 }
 ```
