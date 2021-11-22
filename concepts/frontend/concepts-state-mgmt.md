@@ -170,10 +170,10 @@ export default class UserModule extends VuexModule {
   async updateProfile(profile: UserProfile) {
     // send to api
     // mutate state
-    this.SET_PROFILE(profile);
+    this.setProfile(profile);
   }
   @Mutation
-  private SET_PROFILE(profile: UserProfile): void {
+  private setProfile(profile: UserProfile): void {
     this.currentUser = profile;
   }
 }

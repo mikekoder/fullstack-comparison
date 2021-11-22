@@ -8,7 +8,7 @@ Template is html with special Angular markup
 ```
 Script exports component class.
 @Component decorator is used to configure tag name and template and style files.
-```
+``` ts
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
@@ -24,7 +24,7 @@ export class ExampleComponent implements OnInit {
 
 ## Blazor
 Components are in .razor files which contains template, code and possibly some attributes like route
-```
+``` csharp
 @page "/"
 
 <div>Markup</div>
@@ -57,7 +57,7 @@ Components can be in single .vue files which has three parts: template, script, 
 Any of those parts can also be separated to distinct files (.html, .ts, .scss).
 
 ### Class API
-```
+``` ts
 <template>
   Markup
 </template>
@@ -74,7 +74,7 @@ export default class Test extends Vue {
 </style>
 ```
 ### Composition API
-```
+``` ts
 <template>
   Markup
 </template>
@@ -230,15 +230,45 @@ categoryChanged(newValue, oldValue) {
 ```
 
 ## Blazor
+``` csharp
+@code
+{
+   Person person = new Person();
+   protected override void OnInitialized()
+   {
+        EditContext = new EditContext(person);
+        EditContext.OnFieldChanged += EditContext_OnFieldChanged;
+       
+        base.OnInitialized();
+   }     
 
+   
+    // Note: The OnFieldChanged event is raised for each field in the 
+     // model
+    private void EditContext_OnFieldChanged(object sender,  FieldChangedEventArgs e)
+    {
+        Console.WriteLine(e.FieldIdentifier.FieldName);
 
-## React
+    }
+    
+}
+```
+
+## React class
 ``` ts
 componentDidUpdate(prevProps, prevState) {
   if(this.state.category !== prevState.category){
     this.loadProducts();
   }
 }
+```
+
+## React function
+``` ts
+useEffect(() => {
+  // Update the document title using the browser API
+  document.title = `You clicked ${count} times`;
+});
 ```
 
 ## Svelte
@@ -266,6 +296,13 @@ onCategoryChanged(val: string, oldVal: string) {
 }
 ```
 
+## Vue composition api
+``` ts
+watch(category, (newValue, oldValue) => {
+  loadProducts();
+})
+```
+
 
 # Passing data to component
 
@@ -276,6 +313,7 @@ Defining inputs
 ```
 Passing data
 ``` html
+
 <MyComponent [data]="123" />
 ```
 
@@ -294,12 +332,15 @@ Passing data
 ## Blazor
 Defining public property
 ``` csharp
+
 [Parameter]
 public int Data { get; set; } = 1;
 ```
 
 Passing data
 ``` html
+
+
 <MyComponent Data="123" />
 ```
 
@@ -312,7 +353,11 @@ function MyComponent(props) {
 ```
 Passing data
 ``` jsx
+
+
 <MyComponent data={123} />
+
+
 ```
 
 ## Svelte
@@ -487,6 +532,14 @@ Bind handler to event
 ```
 
 ## Vue hooks
+``` ts
+setup(props, { emit }) {
+
+  const valueChanged = (newVal: string) => {
+    emit('change', newVal)
+  }
+}
+```
 
 # Passing data deep down
 
@@ -495,7 +548,9 @@ Not available
 
 ## Blazor
 Define cascading value
-```
+``` csharp
+
+// pass value
 <CascadingValue Value="@ExampleValue" Name="someData">
   @Body
 </CascadingValue>
@@ -503,6 +558,8 @@ Define cascading value
 
 Read cascading value
 ``` csharp
+
+// read value
 @code {
     [CascadingParameter(Name = "someData")]
     protected ExampleType ExampleParameter { get; set; }
@@ -513,16 +570,22 @@ Read cascading value
 ## React
 Define context
 ``` ts
+
+// define context
 const ExampleContext = React.createContext({ number: 123 });
 ```
 Assign data
 ``` jsx
+
+// pass value
 <ExampleContext.Provider value={overrideData}>
   <SomeComponent />
 </ExampleContext.Provider>
 ```
 Consume data in descendant component
 ``` jsx
+
+// read value
 <ExampleContext.Consumer>
   {contextData => (
     <MyComponent data={contextData} />
@@ -534,9 +597,15 @@ Consume data in descendant component
 
 Define context values
 ``` ts
+
+// ancestor component
 setContext('someData', {
 	number: 123
 });
+
+// descendant component
+const { number } = getContext('someData');
+
 ```
 
 Read value from context
@@ -557,12 +626,23 @@ Read data provided by ancestor component
 ## Vue hooks
 Define data that is passed to descendant components
 ``` ts
+
+
+// pass data
 setup() {
   provide('someData', { number: 123 })
 }
+
+// read data
+setup() {
+  const userLocation = inject('someData')
+}
+
+
 ```
 Read data provided by ancestor component
 ``` ts
+// read data
 setup() {
   const userLocation = inject('someData')
 }
@@ -613,6 +693,7 @@ ng-content is replaced with elements mathing those selectors
 ## Blazor
 Catch & render
 ``` html
+
 <div class="menu">
   @Sidebar
 </div>
@@ -620,6 +701,8 @@ Catch & render
   @Content
 </div>
 
+```
+``` csharp
 @code {
     [Parameter]
     public RenderFragment Sidebar { get; set; }
@@ -629,7 +712,7 @@ Catch & render
 }
 ```
 Pass values by using parameter names as tag names
-``` html
+``` jsx
 <ExampleComponent>
     <Sidebar>
       Sidebar content
@@ -637,7 +720,7 @@ Pass values by using parameter names as tag names
     <Content>
       Main content
     </Content>
-</TableTemplate>
+</ExampleComponent>
 ```
 
 
@@ -843,6 +926,14 @@ componentWillUnmount() {
 }
 ```
 
+## React function
+``` ts
+useEffect(() => {
+    // Update the document title using the browser API
+    document.title = `You clicked ${count} times`;
+  });
+```
+
 ## Svelte
 ``` ts
 onMount(async () => {
@@ -869,7 +960,26 @@ destroyed() {
   // clean resources
 }
 ```
+## Vue hooks
+``` ts
+export default {
+  setup() {
+    // fetch initial data
 
+    onMounted(() => {
+      // dom ready
+    })
+
+    onUpdated(() => {
+      // react to changes
+    });
+
+    onUnmounted(() => {
+      // clean resources
+    });
+  }
+}
+```
 
 # Element reference
 
@@ -928,6 +1038,26 @@ const el = this.$refs.myRef;
 ## Angular
 https://angular.io/guide/dynamic-component-loader
 
+## Blazor
+``` csharp
+@componentToDisplay
+
+@code {
+    var componentToDisplay = someCondition ? ComponentA : ComponentB;
+
+    static readonly RenderFragment ComponentA = _ =>
+    {
+        <ComponentA />
+    };
+
+    static readonly RenderFragment ComponentB = _ =>
+    {
+        <ComponentB />
+    };
+}
+```
+
+
 ## React
 Components can be assigned to variables
 ``` ts
@@ -939,7 +1069,7 @@ const componentToDisplay = someCondition ? <ComponentOne /> : <ComponentTwo>
 ```
 ## Svelte
 Component type can be assigned to a variable
-```
+``` ts
 const componentToDisplay = someCondition ? ComponentOne : ComponentTwo
 ```
 Special attribute is used to dynamically display the component
@@ -957,3 +1087,31 @@ Special attribute is used to dynamically display the component
 <component :is="componentToDisplay"></component>
 ```
 
+# DOM reference
+``` Angular
+
+```
+
+
+## Vue.js
+``` jsx
+<template>
+  <div ref="map"></div>
+</template>
+<script>
+  import { ref, onMounted } from 'vue'
+
+  export default {
+    setup() {
+      const map = ref(null)
+      onMounted(() => {
+        // render map
+      })
+
+      return {
+        map
+      }
+    }
+  }
+</script>
+```

@@ -75,10 +75,36 @@ app.add_middleware(
 )
 ``` 
 
+#### hapi
+``` js
+// hapi
+server.route({
+    cors: true, // or config object
+    method: 'GET',
+    path: '/files/{path*}',
+    handler: function (request, h) {
+        // ...
+    }
+});
+```
+
 #### NestJS
 ``` ts
 // NestJS
 app.enableCors(/* configuration */);
+```
+
+#### Play Framework
+``` plain
+play.filters.enabled += "play.filters.cors.CORSFilter"
+
+play.filters.cors {
+  pathPrefixes = ["/some/path", ...]
+  allowedOrigins = ["http://www.example.com", ...]
+  allowedHttpMethods = ["GET", "POST"]
+  allowedHttpHeaders = ["Accept"]
+  preflightMaxAge = 3 days
+}
 ```
 
 #### Quarkus
@@ -311,6 +337,14 @@ def process_response(sender, response, **extra):
 
 request_started.connect(process_request, app)
 request_finished.connect(process_response, app)
+
+@app.before_request
+def process_request():
+    #...
+
+@app.after_request
+def process_response():
+    #...
 ```
 
 ``` python
@@ -862,6 +896,24 @@ public class ExampleService : Service
 }
 ```
 
+#### Symfony
+``` php
+class ExceptionSubscriber implements EventSubscriberInterface
+{
+    public static function getSubscribedEvents()
+    {
+        // return the subscribed events, their methods and priorities
+        return [
+            KernelEvents::EXCEPTION => [
+                ['processException', 10],
+                ['logException', 0],
+                ['notifyException', -10],
+            ],
+        ];
+    }
+}
+```
+
 ## Content negotiation
 HTTP request headers include *Content-Type* which describes the type of the body and *Accept* which describes the desired type for the response. Usually it's possible to read header values in the handler code and use branching logic to decide which parsers and serializers to use.
 ```
@@ -1046,6 +1098,7 @@ environment.jersey().register(new CustomExceptionMapper());
 
 #### FastAPI
 ``` python
+# FastAPI
 @app.exception_handler(ExampleException)
 async def example_exception_handler(request: Request, exc: ExampleException):
     # ...
@@ -1053,6 +1106,8 @@ async def example_exception_handler(request: Request, exc: ExampleException):
 
 #### Flask
 ``` python
+
+## Flask
 @app.errorhandler(HTTPException)
 def handle_exception(e):
     # ...
@@ -1080,6 +1135,34 @@ export class HttpExceptionFilter implements ExceptionFilter {
     // ...
   }
 }
+```
+
+#### Play Framework
+``` java
+@Singleton
+public class ErrorHandler extends DefaultHttpErrorHandler {
+
+  @Inject
+  public ErrorHandler(
+      Config config,
+      Environment environment,
+      OptionalSourceMapper sourceMapper,
+      Provider<Router> routes) {
+    super(config, environment, sourceMapper, routes);
+  }
+
+  protected CompletionStage<Result> onServerError(RequestHeader request, Throwable exception) {
+    // ...
+  }
+}
+```
+
+#### Restify
+``` js
+server.on('InternalServer', function (req, res, err, cb) {
+  // ...
+  return cb();
+});
 ```
 
 #### ServiceStack

@@ -36,6 +36,10 @@ private Route createRoute() {
         pathPrefix("products", () ->
           path(longSegment(), (Long id) -> {
             // ...
+          })),
+        pathPrefix("files", () ->
+          path(segment(/* regex*/), (String path) -> {
+            // ...
           }))),
       post(() ->
         path("products", () ->
@@ -511,6 +515,15 @@ $routes->prefix('api', function (RouteBuilder $routes) {
 app.use('/api', router);
 ```
 
+#### Flask
+``` python
+def product_list():
+    # ...
+
+prefix = "/api/"
+app.add_url_rule(prefix + "products", view_func=product_list, methods=['GET'])
+```
+
 #### Laravel
 ```php
 // Laravel
@@ -682,6 +695,20 @@ var relativeUrl = new GetProduct { Id = 123 }.ToGetUrl();
 var absoluteUrl = new GetProduct { Id = 123 }.ToAbsoluteUri();
 ```
 
+#### Play Framework
+``` java
+public class Example extends Controller {
+
+  public Result getDetails(Int id) {
+    // ...
+  }
+  public Result create() {
+      return redirect(controllers.routes.Example.getDetails(123));
+  }
+}
+```
+
+
 #### Spring (Boot)
 ``` java
 // Spring
@@ -828,6 +855,13 @@ server.get('/products/:id', restify.plugins.conditionalHandler([
 
 ### Static files
 
+#### Akka HTTP
+``` java
+final Route route = pathPrefix("assets", () ->
+  getFromDirectory("/path/to/files")
+);
+```
+
 #### ASP.NET Core
 ``` csharp
 // ASP.NET Core
@@ -900,6 +934,15 @@ server.route({
 export class AppModule {}
 ```
 
+#### Play Framework
+``` plain
+play.assets {
+  path = "/public"
+  urlPrefix = "/assets"
+}
+
+GET  /assets/*file        controllers.Assets.at(file)
+```
 
 
 

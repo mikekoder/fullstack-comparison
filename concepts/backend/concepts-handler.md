@@ -262,6 +262,19 @@ async def update_product(id: int, product: ProductModel):
     # ...
 ```
 
+#### Micronaut
+``` java
+// Micronaut
+@Controller("/products") 
+public class ProductsController {
+
+    @Put("/{id:\\d+}")
+    public Single<HttpResponse<Person>> update(@PathVariable Integer id, @Body Single<Product> product) { 
+        // ...
+    }
+}
+```
+
 #### NestJS
 ```ts
 // NestJS
@@ -347,6 +360,16 @@ public class ValidateModelFilter : ActionFilterAttribute
 }
 ```
 
+#### CakePHP
+``` php
+$validator = new Validator();
+$validator
+    ->requirePresence('name')
+    // ...
+
+$errors = $validator->validate($this->request->getData());
+```
+
 #### Django
 ``` python
 class ProductModel(models.Model):
@@ -387,6 +410,7 @@ public Person update(@NotNull @Valid Person person) {
 #### FastAPI
 Automatically validated in the endpoint
 ``` python
+# FastAPI
 class Product(BaseModel):
     name: str
     description: Optional[str] = None
@@ -397,10 +421,28 @@ async def create_product(product: Product):
     # ...
 ```
 
+#### Micronaut
+``` java
+public class Product {
+    @NotBlank 
+    String name;
+    // ...
+}
+
+// Micronaut
+@Validated
+@Controller("/products") 
+public class ProductsController {
+    @Put("/{id:\\d+}")
+    public Single<HttpResponse<Person>> update(@PathVariable Integer id, @Body Single<Product> product) { 
+        // ...
+    }
+}
+```
+
 #### NestJS
 ``` ts
 // NestJS
-
 export class ProductModel {
   @IsNotEmpty()
   name: string;
@@ -493,6 +535,7 @@ $this->output->cache(5);
 
 #### Django
 ``` python
+# Django
 @cache_page(5 * 60)
 def most_read_news(request):
     # ...
@@ -559,6 +602,16 @@ if(!_cache.TryGetValue<string>("key", out string value))
 }
 //
 ```
+
+#### CakePHP
+``` php
+$value = Cache::read('key');
+if ($value === null) {
+    $value = ''
+    Cache::write('key', $value);
+}
+```
+
 ## CodeIgniter
 ``` php
 $this->load->driver('cache', array('adapter' => 'apc', 'backup' => 'file'));
@@ -575,15 +628,27 @@ return $value;
 
 #### Django
 ``` python
+# Django
 cache.get_or_set('key', get_value)
 ```
 
 
 #### Laravel
 ``` php
+// Laravel
 $value = Cache::get('key', function () {
     // insert value
     return '';
+});
+```
+
+#### Symfony
+``` php
+// Symfony
+$value = $cache->get('key', function (ItemInterface $item) {
+    $item->expiresAfter(5*60);
+    $computedValue = '';
+    return $computedValue;
 });
 ```
 
@@ -610,9 +675,34 @@ private void EvictionCallback(object key, object value, EvictionReason reason, o
 }
 ```
 
+#### CakePHP
+``` php
+Cache::setConfig('example-config', [
+    'className' => 'Redis',
+    'duration' => '+999 days',
+    'groups' => ['example']
+]);
+
+Cache::clearGroup('example', 'example-config');
+```
+
+
 #### Laravel
 ``` php
+// Laravel
 Cache::tags(['example-tag'])->put('key', $value, $seconds);
 
 Cache::tags(['example-tag'])->flush();
+```
+
+
+#### Symfony
+``` php
+$item = $cache->get('key', function (ItemInterface $item) {
+    // ...
+    $item->tag('tag_1');
+    return $cachedValue;
+});
+
+$cache->invalidateTags(['tag_1']);
 ```

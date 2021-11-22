@@ -50,7 +50,7 @@ class Kernel extends ConsoleKernel
 export class TasksService {
 
   @Cron('0 */5 * * * *')
-  handleCron() {
+  exampleTask() {
     // ...
   }
 }
@@ -59,13 +59,20 @@ export class TasksService {
 #### Spring / Spring Boot
 
 ``` java
-@Scheduled(fixedDelay = 1000)
-public void handleFixedDelayTask() {
-    // ...
-}
+public class ScheduledFixedRateExample {
+    @Scheduled(fixedDelay = 1000)
+    public void handleFixedDelayTask() {
+        // ...
+    }
 
-@Scheduled(cron = "0 */5 * * * *")
-public void handleCronTask() {
-    // ...
+    @Scheduled(fixedRate = 1000)
+    public void scheduleFixedRateTask() {
+        // ...
+    }
+
+    @Scheduled(cron = "0 */5 * * * *")
+    public void handleCronTask() {
+        // ...
+    }
 }
 ```

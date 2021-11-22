@@ -44,21 +44,25 @@ https://react.i18next.com/
   text {{ name: person.name }}
 </Trans>
 
-<Trans i18nKey="newMessages" count={messages.length}>
-  You got {{ count: messages.length }} messages.
+<Trans i18nKey="simplePluralized" count={messages.length}>
+  You got {{ count: messages.length }}.
 </Trans>
 ```
 ## Svelte (svelte-i18n)
 ``` ts
 const messages = {
   simple: 'text',
-  withNamedParameter: 'text {name}'
+  withNamedParameter: 'text {name}',
+  pluralizedWithNumber: ' {n, plural, =0 {no items} one { one item } other {# items }',
+  withDate: "text {date}"
 }
 ```
 
 ```ts
 $_('simple')
 $_('withNamedParameter', { values: { name: 'value' }})
+$_('pluralizedWithNumber', { n: nominationCount })
+$_('withDate', { date: $_.date(new Date(), 'long')})
 ```
 
 ## Vue (vue-i18n)

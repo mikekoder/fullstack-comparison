@@ -5,7 +5,6 @@ Following is added by default when the project is created.
 Api documentation is reflected from the controllers automatically.
 ``` csharp
 // ASP.NET Core
-
 services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -22,6 +21,30 @@ Enabled by default
 #### NestJS
 ``` ts
 // NestJS
+@Controller({ path: 'products' })
+@ApiTags('products')
+export class ProductController {
+
+  @Get()
+  @ApiOkResponse({
+    type: [ProductModel]
+  })
+  async listProducts(): Promise<ProductModel[]> {
+    // ...
+  }
+}
+
+export class ProductModel {
+
+  @ApiProperty()
+  id: string;
+  
+  @ApiProperty()
+  name: string;
+
+  // ...
+}
+
 const options = new DocumentBuilder()
   .setTitle('My API')
   .setVersion('1.0')
@@ -29,5 +52,4 @@ const options = new DocumentBuilder()
   
 const document = SwaggerModule.createDocument(app, options);
 SwaggerModule.setup('api', app, document);
-
 ```

@@ -196,11 +196,16 @@ export class SomeComponent {
 ```
 
 ## Blazor
-``` csharp
-private string name;
-```
+
 ``` html
+
 <input type="text" @bind="name" />
+```
+
+``` csharp
+@code {
+  private string name;
+}
 ```
 
 ## React
@@ -219,7 +224,7 @@ nameChanged(event) {
 
 ## Vue
 ``` html
-<input type="text" v-model="name" />
+<input type="text" :value="name" />
 ```
 
 # Input validation
@@ -279,12 +284,14 @@ Check validility
 
 ## Quasar (Vue)
 ``` html
+<!-- Quasar Framework -->
 <q-input v-model="name" :rules="[val => !!val || 'Field is required']" />
 ```
 
 # Attributes
 ## Angular
 ``` html
+<!-- Bngular -->
 <img [src]="product.imageUrl" />
 ```
 
@@ -295,21 +302,25 @@ Check validility
 
 ## Blazor
 ``` html
+<!-- Blazor -->
 <img src="@product.imageUrl" />
 ```
 
 ## React
 ``` xml
+<!-- React -->
 <img src={product.imageUrl} />
 ```
 
 ## Svelte
 ``` html
+<!-- Svelte -->
 <img src={product.imageUrl} />
 ```
 
 ## Vue
 ``` html
+<!-- Vue.js -->
 <img :src="product.imageUrl" />
 ```
 
@@ -317,7 +328,8 @@ Check validility
 
 ## Angular
 ``` html
-<div [ngClass]="{ active: selected === 'first' }"></div>
+<!-- Angular -->
+<div [ngClass]="{ active: selected === 'first', another: foo === 'bar' }"></div>
 <div [ngClass]="{ active: selected === 'second' }"></div>
 ```
 
@@ -347,8 +359,11 @@ Check validility
 
 ## Vue
 ``` html
-<div v-bind:class="{ active: selected === 'first' }"></div>
-<div v-bind:class="{ active: selected === 'second' }"></div>
+<div :class="{ active: selected === 'first' }"></div>
+<div :class="{ active: selected === 'second' }"></div>
+
+<!-- Vue.js -->
+<div :class="['first', 'second']"></div>
 ```
 
 # Events / Event modifiers
@@ -401,15 +416,16 @@ Just add Component.razor.css file next to Component.razor
 ## Angular
 ``` ts
 import {formatDate} from './utils'
+
 @Pipe({name: 'formatDate'})
 export class FormatDatePipe implements PipeTransform {
-  transform(value: DateTime, format: string): string {
+  transform(value: Date, format: string): string {
     return formatDate(value, format);
   }
 }
 ```
 Value before the pipe is the first argument of the function
-``` html
+``` jsx
 {{ published | formatDate:'dd.MM.yyyy' }}
 ```
 
@@ -425,7 +441,7 @@ import { formatDate} from './utils'
 ## Vue
 ``` ts
 import {formatDate} from './utils'
-Vue.filter('formatDate', (value: DateTime, format: string) => {
+Vue.filter('formatDate', (value: Date, format: string) => {
   return formatDate(value, format);
 })
 ```
@@ -438,6 +454,7 @@ Value before the pipe is the first argument of the function
 
 ## Angular
 ``` ts
+// Angular
 @Directive({
   selector: '[exampleDirective]'
 })

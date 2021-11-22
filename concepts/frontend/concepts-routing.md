@@ -51,6 +51,7 @@ Defining route
 ``` csharp
 // Blazor
 @page "/products/{id}"
+
 ```
 Reading parameters (case insensitive)
 ``` csharp
@@ -111,6 +112,7 @@ const routes = [
 ```
 Route values can be mapped to props
 ``` ts
+
 { 
   path: '/products/:id(\\d+)',
   name: 'PRODUCT_DETAILS',
@@ -119,12 +121,13 @@ Route values can be mapped to props
     return {
       id: route.params.id,
     }
-  },
+  }
 }
 ```
 
 Generating link
 ``` html
+<!-- Svelte -->
 <RouterLink to={{name: 'PRODUCT_DETAILS', params:{id: 123}}>Product details</RouterLink>
 ```
 
@@ -141,6 +144,7 @@ $router.push({
 ## vue-router
 Defining routes
 ``` ts
+// Vue.js
 const router = new VueRouter({
   routes: [
     {
@@ -158,10 +162,12 @@ const productId = this.$route.params.id;
 ```
 Generating link
 ``` html
+<!-- Vue -->
 <router-link :to="{ name: 'product-details', params: { id: product.id }}">Product details</router-link>
 ```
 Navigating
 ```ts
+// Vue
 this.$router.push({ name: 'product-details', params: { id: 123 }})
 ```
 
@@ -169,6 +175,7 @@ this.$router.push({ name: 'product-details', params: { id: 123 }})
 ## Angular
 Defining metadata
 ``` ts
+// Angular
 const routes: Routes = [
   { 
     path: 'bugs', 
@@ -198,8 +205,29 @@ const issueType = this.activatedRoute.snapshot.data.issueType;
 ```
 
 
+
+
+
+## Blazor
+``` csharp
+// Blazor
+@page "/bugs"
+<IssueList issueType="bug" />
+
+// Blazor
+@page "/stories"
+<IssueList issueType="story" />
+```
+
 ## react-router-dom
-Not available
+``` tsx
+<Route path="/bugs">
+  <IssueList data={{ issueType: 'bug'}} />
+</Route>
+<Route path="/stories">
+  <IssueList data={{ issueType: 'story'}} />
+</Route>
+```
 
 ## svelte-router
 Routes can have meta
@@ -237,13 +265,14 @@ const router = new VueRouter({
     {
       path: '/stories',
       component: IssueList,
-      meta: { issueType: 'story' }
+      meta: { issueType: 'story', adminOnly: true }
     }
   ]
 })
 ```
 Using meta in guards
 ``` ts
+// Vue
 router.beforeEach((to, from, next) => {
   if (to.matched.some(r => r.meta.adminOnly)) {
     // check role
@@ -261,6 +290,7 @@ const issueType = this.$route.meta.issueType;
 # Before / after hooks & guards
 ## Angular
 ``` ts
+// Angular
 const routes: Routes = [
   { 
     path: 'products/:id', 
@@ -268,6 +298,8 @@ const routes: Routes = [
     canActivate: [CanActivateProductDetails]
   },
 ];
+
+
 ```
 
 ## Aurelia
@@ -283,7 +315,8 @@ config.addPreActivateStep(step);
 
 ## Blazor
 Guards are located in components
-```
+``` csharp
+// Blazor
 @attribute [Authorize(Policy = "MyPolicy")]
 ```
 
@@ -294,6 +327,7 @@ https://reactrouter.com/web/example/auth-workflow
 
 ## svelte-router
 ``` ts
+// Svelte
 $router.navigationGuard((from, to, next) => {
   // next()         to continue
   // next(false)    to abort
@@ -304,6 +338,7 @@ $router.navigationGuard((from, to, next) => {
 ## vue-router
 Global hooks
 ``` ts
+// Vue
 const router = new VueRouter({ ... })
 
 router.beforeEach((to, from, next) => {
@@ -334,6 +369,7 @@ const router = new VueRouter({
 # Nested routes
 ## Angular
 ``` ts
+// Angular
 const routes: Routes = [
   {
     path: 'products/:id',
@@ -354,6 +390,7 @@ const routes: Routes = [
 
 ## react-router-dom
 ``` xml
+<!-- React --> 
 <Switch> 
   <Route path="/products/:id">
     <ProductLayout />
@@ -375,6 +412,7 @@ const routes: Routes = [
 
 ## svelte-router
 ``` ts
+// Svelte
 { 
   path: '/products/:id(\\d+)',
   children: [
@@ -392,6 +430,7 @@ const routes: Routes = [
 
 ## vue-router
 ``` ts
+// Vue
 const router = new VueRouter({
   routes: [
     { 
@@ -421,6 +460,7 @@ Define outlets in template
 ```
 Define which component goes to which outlet
 ``` ts
+// Angular
 const routes: Routes = [
   {
     path: 'products',
@@ -461,6 +501,7 @@ Define what component is shown in each viewport
 ## react-router-dom
 Define route components
 ``` ts
+// React
 const routes = [
   {
     path: "/products",
@@ -489,11 +530,13 @@ Render components
 ## vue-router
 Define views in templates
 ``` html
+// Vue
 <router-view name="sidebar"></router-view>
 <router-view></router-view>
 ```
 Define which component goes to which view
 ``` ts
+// Vue
 const router = new VueRouter({
   routes: [
     {
@@ -552,6 +595,23 @@ routes: [
   // ...
   { path: '*', component: NotFound }
 ]
+
+
+routes: [
+{
+    path: '/products/:id(\\d+)',
+    name: 'PRODUCT_DETAILS',
+    component: ProductDetails,
+    props: (route) => {
+      return {
+        id: route.params.id,
+      }
+    }
+  },
+  { path: '*', component: NotFound }
+  // ...
+]
+
 ```
 
 ## vue-router
